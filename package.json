@@ -1,0 +1,36 @@
+{
+  "name": "backend-repo",
+  "version": "1.0.0",
+  "description": "## First: npm init -y",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev": "nodemon index.js",
+    "seed": "node ./db/seed.js",
+    "seed:dev": "nodemon db/seed.js",
+    "start": "node index.js",
+    "seed-and-start": "node db/seed.js && node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Capstone-Group-3/Backend-Repo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Capstone-Group-3/Backend-Repo/issues"
+  },
+  "homepage": "https://github.com/Capstone-Group-3/Backend-Repo#readme",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.10.0",
+    "pg": "^8.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}

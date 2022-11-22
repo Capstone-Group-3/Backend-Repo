@@ -40,7 +40,7 @@ async function getUser( { username, password } ) {
     } catch (error) {
         console.error
     }
-}
+};
 
 async function getUserById(id) {
     try {
@@ -53,7 +53,7 @@ async function getUserById(id) {
     } catch (error) {
         console.error
     }
-}
+};
 
 async function getUserByUsername(username) {
     try {
@@ -74,15 +74,15 @@ async function toggleAdmin(username) {
     try {
         const { rows:[user] } = await client.query(`
             UPDATE users
-            SET "isAdmin" = ${!adminStatus}
-            WHERE username = $1
+            SET "isAdmin" = $1
+            WHERE username = $2
             RETURNING *;
-        `,[username])
+        `,[!adminStatus, username])
         return user
     } catch (error) {
         console.error
     }
     
-}
+};
 
 module.exports = { createUser, getUser, getUserById, getUserByUsername, toggleAdmin }

@@ -1,5 +1,5 @@
 const { client } = require('./client')
-const { createUser, getUserByUsername, getUserById, toggleAdmin } = require('./users')
+const { createUser, getUserByUsername, getUserById, toggleAdmin, getUser } = require('./users')
 
 async function dropTables(){
     try {
@@ -56,13 +56,21 @@ async function createInitialUsers(){
         await createUser({username: "Prestest", password: "Prespass"})
         await toggleAdmin("Prestest")
         await createUser({username: "Nicktest", password: "Nickpass"})
+        await toggleAdmin("Nicktest")
         await createUser({username: "Emirtest", password: "Emirpass"})
+        await toggleAdmin("Emirtest")
     } catch (error) {
-        console.log(error)
+        console.error
     }
 }
 
-
+async function createInitialProducts(){
+    try {
+        await createProduct
+    } catch (error) {
+        console.error
+    }
+}
 
 async function resetDB(){
     try {
@@ -71,7 +79,7 @@ async function resetDB(){
         await dropTables();
         await createTables();
         await createInitialUsers();
-        client.end();
+        await getUser({username: 'Prestest', password: 'Prespass'})
     } catch (error){
         console.log(error)
     }

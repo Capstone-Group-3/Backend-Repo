@@ -40,7 +40,7 @@ async function getUser( { username, password } ) {
     } catch (error) {
         console.error
     }
-}
+};
 
 async function getUserById(id) {
     try {
@@ -53,7 +53,7 @@ async function getUserById(id) {
     } catch (error) {
         console.error
     }
-}
+};
 
 async function getUserByUsername(username) {
     try {
@@ -83,6 +83,6 @@ async function toggleAdmin(username) {
         console.error
     }
     
-}
+};
 
 module.exports = { createUser, getUser, getUserById, getUserByUsername, toggleAdmin }

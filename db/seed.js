@@ -1,5 +1,7 @@
 const { client } = require('./client')
 const { createUser, getUserByUsername, getUserById, toggleAdmin, getUser } = require('./users')
+const { createProduct } = require('./products')
+
 
 async function dropTables(){
     try {
@@ -65,8 +67,11 @@ async function createInitialUsers(){
 }
 
 async function createInitialProducts(){
+    console.log('creating initial products...')
     try {
-        await createProduct
+        await createProduct( { name: "holey pants", description: "Yeah I stole this from the set of Fresh Prince, what about it?", price: 11000.55, quantity: 1 } )
+        await createProduct( { name: "T-shirt with the pope's face", description: "As title says. I thought these would sell better,", price: 5.99, quantity: 50 } )
+        await createProduct( { name: "JNKO jeans", description: "uncovered in a time capsule beneath Washington High School, they'll be popular soon probably", price: 19.85, quantity: 20 } )
     } catch (error) {
         console.error
     }
@@ -79,7 +84,7 @@ async function resetDB(){
         await dropTables();
         await createTables();
         await createInitialUsers();
-        await getUser({username: 'Prestest', password: 'Prespass'})
+        await createInitialProducts();
     } catch (error){
         console.log(error)
     }

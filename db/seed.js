@@ -1,9 +1,12 @@
 const { client } = require('./client')
+const { createUser, getUserByUsername, getUserById, toggleAdmin } = require('./users')
 
 async function dropTables(){
     try {
+        console.log("dropping tables...")
         await client.query(`
-            DROP TABLE IF EXISTS "shopCart";
+            DROP TABLE IF EXISTS "cartItems";
+            DROP TABLE IF EXISTS shopcart;
             DROP TABLE IF EXISTS products;
             DROP TABLE IF EXISTS users;
         `);
@@ -14,6 +17,7 @@ async function dropTables(){
 
 async function createTables(){
     try {
+        console.log('creating tables...')
         await client.query(`
             CREATE TABLE users (
                 id SERIAL PRIMARY KEY,
@@ -25,15 +29,20 @@ async function createTables(){
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(255) UNIQUE NOT NULL,
                 description VARCHAR(255),
-                price NUMBER NOT NULL
+                price NUMERIC NOT NULL,
+                quantity INTEGER NOT NULL
             );
-            CREATE TABLE "shopCart" (
+            CREATE TABLE shopcart (
                 id SERIAL PRIMARY KEY,
-                "userId" INTEGER REFERENCE users(id),
-                "productId" INTEGER REFERENCE products(id),
-                count INTEGER NOT NULL,
-                price NUMBER NOT NULL,
-                "orderHistory BOOLEAN DEFAULT false
+                "userId" INTEGER REFERENCES users(id),
+                "cartStatus" VARCHAR(255) NOT NULL
+            );
+            CREATE TABLE "cartItems" (
+                id SERIAL PRIMARY KEY,
+                "cartId" INTEGER REFERENCES shopcart(id),
+                "productId" INTEGER REFERENCES products(id),
+                "priceBoughtAt" NUMERIC NOT NULL,
+                quantity INTEGER NOT NULL
             );
         `)
     } catch (error) {
@@ -43,11 +52,17 @@ async function createTables(){
 
 async function createInitialUsers(){
     try {
-        
+        console.log('creating begining users...')
+        await createUser({username: "Prestest", password: "Prespass"})
+        await toggleAdmin("Prestest")
+        await createUser({username: "Nicktest", password: "Nickpass"})
+        await createUser({username: "Emirtest", password: "Emirpass"})
     } catch (error) {
         console.log(error)
     }
 }
+
+
 
 async function resetDB(){
     try {
@@ -55,7 +70,7 @@ async function resetDB(){
 
         await dropTables();
         await createTables();
-        // await 
+        await createInitialUsers();
         client.end();
     } catch (error){
         console.log(error)

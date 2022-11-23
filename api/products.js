@@ -68,7 +68,7 @@ productsRouter.patch("/:productId", async (req, res, next) => {
     };
 
     try {
-        const updatedProduct = await updatedProduct(productId, productInfo);
+        const updatedProduct = await updateProduct(productId, productInfo);
 
         res.send(updatedProduct);
     } catch ({name, message}) {

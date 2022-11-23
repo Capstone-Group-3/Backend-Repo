@@ -8,10 +8,10 @@ function requireUser(req, res, next) {
     next();
 };
 
-function requireAdmin(req, res, next) {
-    //add isadmin to return user by id
-    // talk to jeremy, is adding "isadmin" to getuser by id && req.user a security issue?
-    if(req.user)
-}
+// function requireAdmin(req, res, next) {
+//     //add isadmin to return user by id
+//     // talk to jeremy, is adding "isadmin" to getuser by id && req.user a security issue?
+//     if(req.user)
+// }
 
 module.exports = { requireUser }

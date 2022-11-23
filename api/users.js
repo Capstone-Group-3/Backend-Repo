@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAllUsers,getUserByUsername, getUser, createUser } = require('../db/users');
+const { getAllUsers, getUserByUsername, getUser, createUser } = require('../db/users');
 const usersRouter = express.Router();
 const jwt = require('jsonwebtoken');
 const {JWT_SECRET} = process.env;
@@ -21,7 +21,7 @@ usersRouter.use((req, res, next) => {
     next(); // THIS IS DIFFERENT
   });
   
-  const { getUserByUsername } = require('../db');
+  // const { getUserByUsername } = require('../db');
   
   // UPDATE
   usersRouter.post('/login', async (req, res, next) => {
@@ -36,14 +36,16 @@ usersRouter.use((req, res, next) => {
     }
     
     try {
-      const user = await getUser(username,password);
+      const user = await getUser({ username, password });
       console.log("this is my user obj", user);
-      if (user && user.password == password) {
+
+      if (user) {
       const token = jwt.sign({ username: username, id: user.id}
         , JWT_SECRET,{
         expiresIn:"1w"})
+
         req.user = user;
-        res.send({ message: "you're logged in!", token });
+        res.send({ message: "you're logged in!", token: token });
       } else {
         next({ 
           name: 'IncorrectCredentialsError', 
@@ -62,17 +64,17 @@ usersRouter.use((req, res, next) => {
     try {
      
       const user = await createUser({
-        username,
-        password
+        username: username,
+        password: password
       });
-  
+      console.log("the user: ", user);
       const token = jwt.sign({ 
         id: user.id, 
         username
       }, process.env.JWT_SECRET, {
         expiresIn: '1w'
       });
-  
+      console.log("the token: ", token);
       res.send({ 
         message: "thank you for signing up",
         token 
@@ -82,21 +84,20 @@ usersRouter.use((req, res, next) => {
     } 
   });
 
-    usersRouter.get('/users', async (req, res, next) => {
-        const { username } = req.params;
-        try {
-          const token = jwt.sign({username}, process.env.JWT_SECRET, {expiresIn:'1w'});
-          const currentUser = await getAllUsers({username,token});
-            if(!token) {
-              next({
-                message: "Invalid credentials"
-              })
-              res.send({currentUser})
-            } 
-          } catch (error) {
-              next(error);
-            }
-      });
+    // usersRouter.get('/users', async (req, res, next) => {
+    //     try {
+    //       const token = jwt.sign({username}, process.env.JWT_SECRET, {expiresIn:'1w'});
+    //       const currentUser = await getAllUsers({username,token});
+    //         if(!token) {
+    //           next({
+    //             message: "Invalid credentials"
+    //           })
+    //           res.send({currentUser})
+    //         } 
+    //       } catch (error) {
+    //           next(error);
+    //         }
+    //   });
 
       usersRouter.get('/:username/shopcart', async (req, res, next) => {
         const {username} = req.params;

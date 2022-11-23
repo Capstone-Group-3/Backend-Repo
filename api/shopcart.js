@@ -11,7 +11,7 @@ const shopcartRouter = express.Router();
 // PATCH /api/shopcart/:shopcartId
 
 
-shopcartRouterRouter.get('/:shopcartId/products', async (req, res, next) => {
+shopcartRouter.get('/:shopcartId/products', async (req, res, next) => {
     try {
         const id = req.params;
         const product = await getProductShopCartById(id);

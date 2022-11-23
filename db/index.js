@@ -1,2 +1,4 @@
 module.exports = {
-    ...require('./client') }
+    ...require('./client'),
+    ...require('./users'),
+    ...require('./products') }

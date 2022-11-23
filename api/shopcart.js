@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const shopcartRouter = express.Router();
+const { requireUser } = require("./utilities")
 
 // GET /api/shopcart/:shopcartId/products
 

@@ -2,11 +2,12 @@ const express = require("express");
 const router = express.Router();
 const { JWT_SECRET } = process.env;
 const jwt = require("jsonwebtoken");
-const apiRouter = express.Router();
+const { requireUser } = require("./utilities");
+const { getUserById } = require("../db/users")
 require("dotenv").config();
 
 // set `req.user` if possible
-apiRouter.use(async (req, res, next) => {
+router.use(async (req, res, next) => {
     const prefix = 'Bearer ';
     const auth = req.header('Authorization');
   
@@ -17,20 +18,17 @@ apiRouter.use(async (req, res, next) => {
       const token = auth.slice(prefix.length);
   
       try {
-        const { id } = jwt.verify(token, JWT_SECRET);
+        const parsedToken = jwt.verify(token, JWT_SECRET);
+        const id = parsedToken && parsedToken.id
   
         if (id) {
           req.user = await getUserById(id);
           next();
-        } else {
-          next({
-            name: 'AuthorizationHeaderError',
-            message: 'Authorization token malformed',
-          });
+
+        } 
+      } catch(error) {
+          next(error);
         }
-      } catch ({ name, message }) {
-        next({ name, message });
-      }
     } else {
       next({
         name: 'AuthorizationHeaderError',
@@ -51,6 +49,13 @@ router.use('/shopcart', shopcartRouter);
 // ROUTER: /api/products
 const productsRouter = require('./products');
 router.use('/products', productsRouter);
+
+router.use((error, req, res, next) => {
+  res.send({
+    name: error.name,
+    message: error.message
+  })
+});
 
 
 module.exports = router

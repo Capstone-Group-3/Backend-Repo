@@ -66,7 +66,7 @@ shopcartRouter.get('/', async (req, res) => {
             }
             try {
               if (req.user) {
-                const updatedActivity = await updateShopCart(shopcartId, updateFields);
+                const updatedShopCart = await updateShopCart(shopcartId, updateFields);
                 res.send({ shopcart: updatedShopCart });
               } else {
                 next({

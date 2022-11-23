@@ -73,6 +73,8 @@ async function updateProduct(id, fields={}){
     } catch (error) {
         console.error
     }
-}
+};
+
+async function deleteProduct(id){}
 
 module.exports = { createProduct, updateProduct, getAllProducts, getProductById, getProductByName }

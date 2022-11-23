@@ -31,7 +31,7 @@ async function getUser( { username, password } ) {
         }
 
         const { rows: [ user ] } = await client.query(`
-            SELECT * FROM users
+            SELECT id, username FROM users
             WHERE username =$1;
         `,[username])
         

@@ -13,8 +13,12 @@ async function createUser( { username, password } ) {
             ON CONFLICT (username) DO NOTHING
             RETURNING *; 
         `, [username, hashWord])
-
-        return user
+        const {rows: [shopcart]} = await client.query(`
+            INSERT INTO shopcart ("userId", "cartStatus")
+            VALUES ($1, $2)
+            RETURNING *;
+        `, [user.id, "standby"])
+        return user, shopcart
     } catch (error) {
         console.error
     }

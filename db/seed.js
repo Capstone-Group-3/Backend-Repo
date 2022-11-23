@@ -1,6 +1,7 @@
 const { client } = require('./client')
 const { createUser, getUserByUsername, getUserById, toggleAdmin, getUser } = require('./users')
-const { createProduct } = require('./products')
+const { createProduct, getProductById } = require('./products')
+const {addProductToCart} = require('./shopcart')
 
 
 async function dropTables(){
@@ -77,6 +78,14 @@ async function createInitialProducts(){
     }
 }
 
+async function initialProdAdds(){
+    try {
+        await addProductToCart({cartId: 1, productId:1})
+    } catch (error) {
+        console.error
+    }
+}
+
 async function resetDB(){
     try {
         client.connect();
@@ -85,6 +94,9 @@ async function resetDB(){
         await createTables();
         await createInitialUsers();
         await createInitialProducts();
+        await initialProdAdds();
+        console.log("Database reset successful")
+        client.end();
     } catch (error){
         console.log(error)
     }

@@ -3,7 +3,8 @@ const router = express.Router();
 const { JWT_SECRET } = process.env;
 const jwt = require("jsonwebtoken");
 const { requireUser } = require("./utilities");
-const { getUserById } = require("../db/users")
+const { getUserById } = require("../db/users");
+const cors = require("cors");
 require("dotenv").config();
 
 // set `req.user` if possible

@@ -1,5 +1,8 @@
 const { client } = require('./client')
-const { createUser, getUserByUsername, getUserById, toggleAdmin } = require('./users')
+const { createUser, getUserByUsername, getUserById, toggleAdmin, getUser } = require('./users')
+const { createProduct, getProductById } = require('./products')
+const {addProductToCart} = require('./shopcart')
+
 
 async function dropTables(){
     try {
@@ -56,13 +59,32 @@ async function createInitialUsers(){
         await createUser({username: "Prestest", password: "Prespass"})
         await toggleAdmin("Prestest")
         await createUser({username: "Nicktest", password: "Nickpass"})
+        await toggleAdmin("Nicktest")
         await createUser({username: "Emirtest", password: "Emirpass"})
+        await toggleAdmin("Emirtest")
     } catch (error) {
-        console.log(error)
+        console.error
     }
 }
 
+async function createInitialProducts(){
+    console.log('creating initial products...')
+    try {
+        await createProduct( { name: "holey pants", description: "Yeah I stole this from the set of Fresh Prince, what about it?", price: 11000.55, quantity: 1 } )
+        await createProduct( { name: "T-shirt with the pope's face", description: "As title says. I thought these would sell better,", price: 5.99, quantity: 50 } )
+        await createProduct( { name: "JNKO jeans", description: "uncovered in a time capsule beneath Washington High School, they'll be popular soon probably", price: 19.85, quantity: 20 } )
+    } catch (error) {
+        console.error
+    }
+}
 
+async function initialProdAdds(){
+    try {
+        await addProductToCart({cartId: 1, productId:1})
+    } catch (error) {
+        console.error
+    }
+}
 
 async function resetDB(){
     try {
@@ -71,6 +93,9 @@ async function resetDB(){
         await dropTables();
         await createTables();
         await createInitialUsers();
+        await createInitialProducts();
+        await initialProdAdds();
+        console.log("Database reset successful")
         client.end();
     } catch (error){
         console.log(error)

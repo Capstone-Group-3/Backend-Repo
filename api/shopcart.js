@@ -26,5 +26,57 @@ shopcartRouter.get('/:shopcartId/products', async (req, res, next) => {
             next(error);
         }
     });
+
+shopcartRouter.get('/', async (req, res) => {
+        const shopcart = await getAllShopCart();
+        res.send({ shopcart });
+      });
+      
+
+    shopcartRouter.post('/', requireUser, async (req, res, next) => {
+        const { name, description, } = req.body;
+        const shopcart = await createShopCart(shopcartData);
+          
+        const shopcartData = { name, description };
+        try {
+        if  (!shopcart) {
+          next({
+            name: "ErrorGettingShopCart",
+            message: "ShopCart does not exist",
+          });
+        }
+            res.send(shopcart);
+          } catch (error) {
+            next(error);
+          }
+      });
+               
+    shopcartRouter.patch('/:shopcartId', async (req, res, next) => {
+            const { shopcartId } = req.params;
+            const { name, description } = req.body;
+            
+            const updateFields = {};
+      
+            if (name) {
+              updateFields.name = name;
+            }
+            
+            if (description) {
+              updateFields.description = description;
+            }
+            try {
+              if (req.user) {
+                const updatedActivity = await updateShopCart(shopcartId, updateFields);
+                res.send({ shopcart: updatedShopCart });
+              } else {
+                next({
+                  name: "UserNotLoggedIn",
+                  message: "Login to update activity",
+                });
+              }
+            } catch ({ name, description }) {
+              next({ name, description });
+            }
+          });
      
 module.exports = shopcartRouter;

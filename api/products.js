@@ -1,7 +1,7 @@
 const express = require('express');
 const { getAllProducts, createProduct, getProductById, updateProduct } = require('../db/products');
 const productsRouter = express.Router();
-const { requireUser } = require("./utilities")
+const { requireAdmin } = require("./utilities")
 
 // GET /api/products
 productsRouter.get("/", async (req, res, next) => {
@@ -11,8 +11,7 @@ productsRouter.get("/", async (req, res, next) => {
 });
 
 // POST /api/products
-productsRouter.post("/", async (req, res, next) => {
-    // REQ ADMIN
+productsRouter.post("/", requireAdmin, async (req, res, next) => {
     const { name, description, price, quantity } = req.body;
     const productInfo = {};
 
@@ -42,8 +41,7 @@ productsRouter.post("/", async (req, res, next) => {
 });
 
 // PATCH /api/products/:productId
-productsRouter.patch("/:productId", async (req, res, next) => {
-    // REQ ADMIN
+productsRouter.patch("/:productId", requireAdmin, async (req, res, next) => {
     
     // Ask jeremy: should these be on an "admin" route? that way users 
     // wouldn't know what the route is/have access to it at all

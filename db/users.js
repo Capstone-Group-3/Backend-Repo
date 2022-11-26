@@ -29,9 +29,10 @@ async function getUser( { username, password } ) {
         if(!password){
             return console.log('pass input failure')
         }
-
+        // has to return password because this function is a log in function,
+        //it checks the user.password (below) against the input password
         const { rows: [ user ] } = await client.query(`
-            SELECT id, username, "isAdmin" FROM users
+            SELECT * FROM users
             WHERE username =$1;
         `,[username])
         

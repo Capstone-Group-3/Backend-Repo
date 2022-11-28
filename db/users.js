@@ -82,6 +82,7 @@ async function toggleAdmin(username) {
     } catch (error) {
         console.error
     }
+};
    
     async function getUserByEmail(
         email,
@@ -99,7 +100,7 @@ async function toggleAdmin(username) {
         console.log("error getting user by email");
         }
     }
-}
+
 
 // update user
 async function updateUser(id, fields={}) {
@@ -143,4 +144,4 @@ async function deleteUser({username, password}) {
     }
 }
 
-module.exports = { createUser, getUser, getUserById, getUserByUsername, toggleAdmin, updateUser, deleteUser }
+module.exports = { createUser, getUser, getUserById, getUserByUsername, toggleAdmin, updateUser, deleteUser, getUserByEmail }

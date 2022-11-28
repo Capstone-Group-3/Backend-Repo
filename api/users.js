@@ -127,20 +127,19 @@ usersRouter.use((req, res, next) => {
     //         }
     //   });
 
-      usersRouter.get('/:username/shopcart', async (req, res, next) => {
-        const {username} = req.params;
+      usersRouter.get('/orders', async (req, res, next) => {
+        const {userId} = req.body
         try{
-          const userShopCart = await getShopCartByUser(username);
+          const userShopCart = await getShopCartByUserId(userId);
           if(!username) {
             next({
-              username: "username does not exist",
-              shopcart: "shopcart dose not exist",
+              name: "username does not exist",
               message: "There is no shopcart for this user"
             });
             res.send(userShopCart)
           }
-        } catch ({message}) {
-          return (username)
+        } catch ({name, message}) {
+          next({name, message})
         }
       });
  

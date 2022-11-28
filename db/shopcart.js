@@ -16,7 +16,7 @@ async function createShopCart({userId}) {
 };
 
 // get products by cart -select * from items where cartid=$1 cartid
-async function getCartItemsById(cartId) {
+async function getProductsByCartId(cartId) {
     try {
         const { rows: [result] } = await client.query(`
             SELECT * FROM "cartItems"
@@ -95,4 +95,4 @@ async function removeProductFromCart({productId, cartId}) {
     }
 }
 
-module.exports = { addProductToCart, updateCart, removeProductFromCart, createShopCart, getCartItemsById, updateCartStatus }
+module.exports = { addProductToCart, updateCart, removeProductFromCart, createShopCart, getProductsByCartId, updateCartStatus }

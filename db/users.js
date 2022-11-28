@@ -86,7 +86,23 @@ async function toggleAdmin(username) {
     } catch (error) {
         console.error
     }
-    
-};
+   
+    async function getUserByEmail(
+        email,
+    ){
+        console.log("gettingUserByEmail...")
+        try{
+            if (!email){
+                return null
+            }
+            const { rows: [ user ] } = await client.query(`
+                SELECT * FROM users WHERE email=${email}
+                `);
+            return user;
+        } catch(error){
+        console.log("error getting user by email");
+        }
+    }
+}
 
 module.exports = { createUser, getUser, getUserById, getUserByUsername, toggleAdmin }

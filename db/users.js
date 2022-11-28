@@ -50,7 +50,7 @@ async function getUser( { username, password } ) {
 async function getUserById(id) {
     try {
         const { rows: [ user ] } = await client.query(`
-            SELECT id, username
+            SELECT id, username, "isAdmin"
             FROM users
             WHERE id = ${id};
         `)
@@ -87,7 +87,48 @@ async function toggleAdmin(username) {
     } catch (error) {
         console.error
     }
-    
 };
 
-module.exports = { createUser, getUser, getUserById, getUserByUsername, toggleAdmin }
+// update user
+async function updateUser(id, fields={}) {
+    const keys = Object.keys(fields);
+    const values = Object.values(fields);
+
+    const setString = keys.map(
+        (key, index) => `"${ key }"=$${ index + 1 }`
+      ).join(', ');
+    
+      if (setString.length === 0) {
+        return
+      };
+
+      try {
+        const { rows: [result] } = await client.query(`
+            UPDATE users
+            SET ${ setString }
+            WHERE id=${id}
+            RETURNING *;
+        `, values);
+
+        return result
+      } catch (error) {
+        console.error
+      }
+}
+
+async function deleteUser({username, password}) {
+    try {
+        const fetchedUser = await getUser({username, password})
+        
+        await client.query(`
+            DELETE FROM users
+            WHERE username=$1;
+        `, [fetchedUser.username]);
+
+        console.log(`User ${fetchedUser.username} successfully deleted`);
+    } catch (error) {
+        console.error
+    }
+}
+
+module.exports = { createUser, getUser, getUserById, getUserByUsername, toggleAdmin, updateUser, deleteUser }

@@ -15,6 +15,22 @@ async function createShopCart({userId}) {
     }
 };
 
+// get products by cart -select * from items where cartid=$1 cartid
+async function getCartItemsById(cartId) {
+    try {
+        const { rows: [result] } = await client.query(`
+            SELECT * FROM "cartItems"
+            WHERE "cartId"=$1
+            RETURNING *;
+        `, [cartId]);
+
+        return result
+    } catch (error) {
+        console.error
+    }
+}
+
+
 async function addProductToCart({cartId, productId}){
     try {
         const addProd = await getProductById(productId)
@@ -63,4 +79,4 @@ async function removeProductFromCart({productId, cartId}) {
     }
 }
 
-module.exports = { addProductToCart, updateCart, removeProductFromCart, createShopCart }
+module.exports = { addProductToCart, updateCart, removeProductFromCart, createShopCart, getCartItemsById }

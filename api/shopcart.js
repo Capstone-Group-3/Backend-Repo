@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const shopcartRouter = express.Router();
+const {createShopCart, updatedShopCart, updateCart }= require('../db/shopcart')
 const { requireUser } = require("./utilities")
 
 // GET /api/shopcart/:shopcartId/products
@@ -15,69 +16,63 @@ const { requireUser } = require("./utilities")
 shopcartRouter.get('/:shopcartId/products', async (req, res, next) => {
     try {
         const id = req.params;
-        const product = await getProductShopCartById(id);
+        const product = await getProductsByCartId(id);
         if (product.length === 0)
           res.send({
-            message: `ShopCart ${id} not found`,
-            name: 'ShopCart not found Error',
-            error: 'ShopCart dose not  exist',
+            name: 'Order not Found',
+            message: `Order ${id} not found`
         });
             res.send({product});
-        } catch (error) {
-            next(error);
+        } catch ({name, message}) {
+            next({name, message});
         }
     });
 
-shopcartRouter.get('/', async (req, res) => {
-        const shopcart = await getAllShopCart();
-        res.send({ shopcart });
-      });
+// shopcartRouter.get('/', async (req, res) => {
+//         const shopcart = await getAllShopCart();
+//         res.send({ shopcart });
+//       });
       
 
-    shopcartRouter.post('/', requireUser, async (req, res, next) => {
-        const { name, description, } = req.body;
-        const shopcart = await createShopCart(shopcartData);
-          
-        const shopcartData = { name, description };
+shopcartRouter.post('/', requireUser, async (req, res, next) => {
+        const { userId } = req.body;
+        
         try {
-        if  (!shopcart) {
-          next({
-            name: "ErrorGettingShopCart",
-            message: "ShopCart does not exist",
-          });
-        }
+            const shopcart = await createShopCart({userId});
             res.send(shopcart);
           } catch (error) {
             next(error);
           }
       });
                
-    shopcartRouter.patch('/:shopcartId', async (req, res, next) => {
-            const { shopcartId } = req.params;
-            const { name, description } = req.body;
-            
-            const updateFields = {};
-      
-            if (name) {
-              updateFields.name = name;
-            }
-            
-            if (description) {
-              updateFields.description = description;
-            }
-            try {
-              if (req.user) {
-                const updatedShopCart = await updateShopCart(shopcartId, updateFields);
-                res.send({ shopcart: updatedShopCart });
-              } else {
-                next({
-                  name: "UserNotLoggedIn",
-                  message: "Login to update activity",
-                });
-              }
-            } catch ({ name, description }) {
-              next({ name, description });
-            }
-          });
+shopcartRouter.patch('/:shopcartId', async (req, res, next) => {
+  const { shopcartId } = req.params;
+  const { cartStatus } = req.body;
+    try {
+      if (req.user) {
+        const updatedShopCart = await /*PlaceholderFunc-updateShopCart*/(shopcartId, cartStatus);
+        res.send({ shopcart: updatedShopCart });
+      } else {
+        next({
+          name: "UserNotLoggedIn",
+          message: "Login to update activity",
+        });
+      }
+    } catch ({ name, description }) {
+      next({ name, description });
+    }
+});
+
+// Set route to change quantity in cartitems, (quantity, productId, cartId)
+shopcartRouter.patch('/:shopcartId/itemQuantity'), async(req, res, next) =>{
+  const { cartId }= req.params
+  const { productId, quantity } = req.body
+  try {
+    const updatedProductCount = await updateCart(quantity, productId, cartId)
+    res.send({product: updatedProductCount})
+  } catch (error) {
+    console.log(error)
+  }
+}
      
 module.exports = shopcartRouter;

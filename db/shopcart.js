@@ -1,6 +1,20 @@
 const { client } = require('./client')
 const { getProductById } = require('./products')
 
+async function createShopCart({userId}) {
+    try {
+        const {rows: [shopcart]} = await client.query(`
+        INSERT INTO shopcart ("userId", "cartStatus")
+        VALUES ($1, $2)
+        RETURNING *;
+    `, [userId, "standby"]);
+
+    return shopcart
+    } catch (error) {
+        console.error
+    }
+};
+
 async function addProductToCart({cartId, productId}){
     try {
         const addProd = await getProductById(productId)
@@ -15,7 +29,38 @@ async function addProductToCart({cartId, productId}){
     }
 };
 
-// update quantity
-// delete product from order
 
-module.exports = { addProductToCart }
+// update cartitems quantity
+async function updateCart({quantity, productId, cartId}) {
+    try {
+        const {rows: [result] } = await client.query(`
+            UPDATE "cartItems"
+            SET quantity=$1
+            WHERE "productId"=$2
+            AND "cartId"=$3
+            RETURNING *;
+        `, [quantity, productId, cartId]);
+
+        return result
+    } catch (error) {
+        console.error
+    }
+}
+
+// delete product from cart (cartitems) 
+async function removeProductFromCart({productId, cartId}) {
+    const addProd = await getProductById(productId)
+    try {
+        await client.query(`
+            DELETE from "cartItems"
+            WHERE "productId"=$1
+            AND "cartId"=$2;
+        `, [productId, cartId]);
+
+        console.log(`Successfully deleted ${addProd.name} from cart`);
+    } catch (error) {
+        console.error
+    }
+}
+
+module.exports = { addProductToCart, updateCart, removeProductFromCart, createShopCart }

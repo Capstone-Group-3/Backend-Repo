@@ -74,7 +74,15 @@ productsRouter.patch("/:productId", requireAdmin, async (req, res, next) => {
     }
 })
 
-// DELETE /api/products/:productId
+productsRouter.delete('/:productId', requireAdmin, async(req, res, next)=>{
+    const  id  = req.params
+    try {
+        const deleteProduct = await /*Placeholder Func*/(id)
+        res.send({product: deleteProduct})
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 module.exports = productsRouter;
 

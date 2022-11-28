@@ -1,8 +1,8 @@
 const express = require('express');
-const { getAllUsers, getUserByUsername, getUser, createUser } = require('../db/users');
+const { getAllUsers, getUserByUsername, getUser, createUser, getUserById, toggleAdmin } = require('../db/users');
 const usersRouter = express.Router();
 const jwt = require('jsonwebtoken');
-const { requireUser } = require('./utilities');
+const { requireUser, requireAdmin } = require('./utilities');
 const {JWT_SECRET} = process.env;
 
 // USE /api/users
@@ -84,26 +84,26 @@ usersRouter.use((req, res, next) => {
     } 
   });
 
-  usersRouter.post('/me', requireUser, async (req, res, next) =>{
+  // usersRouter.post('/me', requireUser, async (req, res, next) =>{
       
-    const {userId} = req.body;
+  //   const {userId} = req.body;
 
-    try {
-      if(req.user.id === userId) {
-        const userData = await getUserById(userId)
-        res.send({userData})
-      } else {
-        next({
-          name: "Unauthorized user error",
-          message: "You are not authorized to view this user's details"
-        })
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  })
+  //   try {
+  //     if(req.user.id === userId) {
+  //       const userData = await getUserById(userId)
+  //       res.send({userData})
+  //     } else {
+  //       next({
+  //         name: "Unauthorized user error",
+  //         message: "You are not authorized to view this user's details"
+  //       })
+  //     }
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // })
 
-  usersRouter.get("/me5", requireUser, async (req, res, next) => {
+  usersRouter.get("/me", requireUser, async (req, res, next) => {
     try {
         const response = req.user
         res.send({response})
@@ -144,5 +144,15 @@ usersRouter.use((req, res, next) => {
         }
       });
  
+      usersRouter.patch('/setAdmin', requireAdmin, async (req, res, next) => {
+        const {username} = req.body;
+
+        try {
+          const Adminresults = await toggleAdmin(username)
+          res.send(Adminresults)
+        } catch (error) {
+          console.log(error)
+        }
+      })
 
 module.exports = usersRouter;

@@ -13,6 +13,9 @@ async function addProductToCart({cartId, productId}){
     } catch (error) {
         console.error
     }
-}
+};
+
+// update quantity
+// delete product from order
 
 module.exports = { addProductToCart }

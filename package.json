@@ -21,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/Capstone-Group-3/Backend-Repo/issues"
   },
-  "homepage": "https://github.com/Capstone-Group-3/Backend-Repo#readme",
+  "homepage": "/",
   "dependencies": {
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",

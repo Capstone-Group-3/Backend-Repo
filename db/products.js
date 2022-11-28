@@ -75,6 +75,21 @@ async function updateProduct(id, fields={}){
     }
 };
 
-async function deleteProduct(id){}
+// this delete function
+async function deleteProduct({id}){
+    try {
+        await client.query(`
+            DELETE FROM "cartItems"
+            WHERE "productId"=$1
+            RETURNING *;
+        `, [id]);
+        await client.query(`
+            DELETE FROM products
+            WHERE id=$1;
+        `, [id])
+    } catch (error) {
+        console.error
+    }
+};
 
-module.exports = { createProduct, updateProduct, getAllProducts, getProductById, getProductByName }
+module.exports = { createProduct, updateProduct, getAllProducts, getProductById, getProductByName, deleteProduct }

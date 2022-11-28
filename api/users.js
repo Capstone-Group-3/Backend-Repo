@@ -1,6 +1,5 @@
 const express = require('express');
-const router = express.Router();
-const { getAllUsers, getUserByUsername, getUser, createUser, getUserById } = require('../db/users');
+const { getAllUsers, getUserByUsername, getUser, createUser } = require('../db/users');
 const usersRouter = express.Router();
 const jwt = require('jsonwebtoken');
 const { requireUser } = require('./utilities');

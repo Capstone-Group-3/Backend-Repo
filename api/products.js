@@ -72,11 +72,12 @@ productsRouter.patch("/:productId",requireUser, requireAdmin, async (req, res, n
     }
 })
 
-productsRouter.delete('/:productId',requireUser, requireAdmin, async(req, res, next)=>{
-    const { id } = req.params
+productsRouter.delete('/:productId', requireAdmin, async(req, res, next)=>{
+    const { productId } = req.params
     try {
-        const deleteProduct = await deleteProduct({id})
-        res.send({product: deleteProduct})
+        const deletedProduct = await deleteProduct(productId)
+        console.log("deleted product: ", deletedProduct);
+        res.send({message: deletedProduct})
     } catch (error) {
         console.log(error)
     }

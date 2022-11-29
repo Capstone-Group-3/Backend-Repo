@@ -106,7 +106,7 @@ usersRouter.use((req, res, next) => {
   usersRouter.get("/me", requireUser, async (req, res, next) => {
     try {
         const response = req.user
-        res.send(response)
+        res.send(response) 
     } catch ({name, message}) {
         next({name, message})
     }

@@ -75,18 +75,22 @@ async function updateProduct(id, fields={}){
     }
 };
 
-// this delete function
-async function deleteProduct({id}){
+// this delete function -- active/inactive status to aid with sales and tax purposes
+// where prodid=$1 AND isactive=true   then delete to keep in old carts/orders already processed
+// update from active true to false where id=$1
+async function deleteProduct(id){
     try {
-        await client.query(`
+        const { rows: deletedCartItems} = await client.query(`
             DELETE FROM "cartItems"
             WHERE "productId"=$1
             RETURNING *;
         `, [id]);
-        await client.query(`
+        const {rows: [deletedProd]} = await client.query(`
             DELETE FROM products
-            WHERE id=$1;
+            WHERE id=$1
+            RETURNING *;
         `, [id])
+        return [deletedCartItems, deletedProd];
     } catch (error) {
         console.error
     }

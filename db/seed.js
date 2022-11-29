@@ -1,6 +1,6 @@
 const { client } = require('./client')
 const { createUser, getUserByUsername, getUserById, toggleAdmin, getUser } = require('./users')
-const { createProduct, getProductById } = require('./products')
+const { createProduct, getProductById, deleteProduct } = require('./products')
 const {addProductToCart} = require('./shopcart')
 
 

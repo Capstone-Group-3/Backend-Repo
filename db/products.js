@@ -65,14 +65,65 @@ async function updateProduct(id, fields={}){
         const {rows: [result]} = await client.query(`
             UPDATE products
             SET ${ setString }
-            WHERE id=${id}
+            WHERE id=$2
             RETURNING *;
-            `, Object.values(fields));
+            `, [...Object.values(fields), Object.keys(fields).length+1]);
 
         return result
     } catch (error) {
         console.error
     }
-}
+};
 
-module.exports = { createProduct, updateProduct, getAllProducts, getProductById, getProductByName }
+// this delete function -- active/inactive status to aid with sales and tax purposes
+// where prodid=$1 AND isactive=true   then delete to keep in old carts/orders already processed
+// update from active true to false where id=$1
+async function deleteProduct(id){
+    try {
+        const {rows} = await client.query(`
+            SELECT id FROM shopcart
+            WHERE "cartStatus" = 'standby';
+        `)
+        const activeCarts = rows.map(element =>{
+            const indivCartId= element.id;
+            const cartPromise= client.query(`
+                DELETE FROM "cartItems"
+                WHERE "cartId" = $1
+                AND "productId" = $2
+                RETURNING*;
+            `, [indivCartId, id])
+            return cartPromise
+        })
+        // const resolvedPromises = await Promise.all(activeCarts)
+        await client.query(`
+            UPDATE products
+            SET "isActive"=false
+            WHERE "id"=$1
+            RETURNING *;
+        `, [id])
+        return rows
+    } catch (error) {
+        console.error
+    }
+
+
+
+
+    // try {
+    //     const { rows: deletedCartItems} = await client.query(`
+    //         DELETE FROM "cartItems"
+    //         WHERE "productId"=$1
+    //         RETURNING *;
+    //     `, [id]);
+    //     const {rows: [deletedProd]} = await client.query(`
+    //         DELETE FROM products
+    //         WHERE id=$1
+    //         RETURNING *;
+    //     `, [id])
+    //     return [deletedCartItems, deletedProd];
+    // } catch (error) {
+    //     console.error
+    // }
+};
+
+module.exports = { createProduct, updateProduct, getAllProducts, getProductById, getProductByName, deleteProduct }

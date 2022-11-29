@@ -1,3 +1,5 @@
+const { getUserByUsername } = require("../db/users");
+
 function requireUser(req, res, next) {
     if (!req.user) {
         next({
@@ -8,10 +10,27 @@ function requireUser(req, res, next) {
     next();
 };
 
-// function requireAdmin(req, res, next) {
-//     //add isadmin to return user by id
-//     // talk to jeremy, is adding "isadmin" to getuser by id && req.user a security issue?
-//     if(req.user)
+function requireAdmin(req, res, next) {
+    if (!req.user.isAdmin) {
+        next({
+            name: "Missing Admin Error",
+            message: "You must be an admin to perform this action"
+        });
+    }
+    next();
+}
+
+// function requireOwner(req, res, next) { // somehow put username in parameters
+//     const thisUsername = req.user.username;
+
+//     getUserByUsername(thisUsername);
+//     if (!req.user.username === username) {
+//         next({
+//             name: "Account Authentication Error",
+//             message: "You must be the owner of this account to perform this action"
+//         })
+//     }
+//     next();
 // }
 
-module.exports = { requireUser }
+module.exports = { requireUser, requireAdmin }

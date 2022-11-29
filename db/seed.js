@@ -1,6 +1,6 @@
 const { client } = require('./client')
 const { createUser, getUserByUsername, getUserById, toggleAdmin, getUser } = require('./users')
-const { createProduct, getProductById } = require('./products')
+const { createProduct, getProductById, deleteProduct } = require('./products')
 const {addProductToCart} = require('./shopcart')
 
 
@@ -26,14 +26,17 @@ async function createTables(){
                 id SERIAL PRIMARY KEY,
                 username VARCHAR(255) UNIQUE NOT NULL,
                 password VARCHAR(255) NOT NULL,
-                "isAdmin" BOOLEAN DEFAULT FALSE
+                email VARCHAR(255) UNIQUE,
+                "isAdmin" BOOLEAN DEFAULT FALSE,
+                "isActive" BOOLEAN DEFAULT TRUE
             );
             CREATE TABLE products (
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(255) UNIQUE NOT NULL,
                 description VARCHAR(255),
                 price NUMERIC NOT NULL,
-                quantity INTEGER NOT NULL
+                quantity INTEGER NOT NULL,
+                "isActive" BOOLEAN DEFAULT TRUE
             );
             CREATE TABLE shopcart (
                 id SERIAL PRIMARY KEY,

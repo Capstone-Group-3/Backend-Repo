@@ -77,7 +77,7 @@ productsRouter.delete('/:productId', requireAdmin, async(req, res, next)=>{
     try {
         const deletedProduct = await deleteProduct(productId)
         console.log("deleted product: ", deletedProduct);
-        res.send({message: deletedProduct})
+        res.send({message: "Successfully deleted"})
     } catch (error) {
         console.log(error)
     }

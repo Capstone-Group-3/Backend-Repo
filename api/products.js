@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllProducts, createProduct, getProductById, updateProduct } = require('../db/products');
+const { getAllProducts, createProduct, getProductById, updateProduct, deleteProduct } = require('../db/products');
 const productsRouter = express.Router();
 const { requireAdmin } = require("./utilities")
 
@@ -75,9 +75,9 @@ productsRouter.patch("/:productId", requireAdmin, async (req, res, next) => {
 })
 
 productsRouter.delete('/:productId', requireAdmin, async(req, res, next)=>{
-    const  id  = req.params
+    const { id } = req.params
     try {
-        const deleteProduct = await /*Placeholder Func*/(id)
+        const deleteProduct = await deleteProduct({id})
         res.send({product: deleteProduct})
     } catch (error) {
         console.log(error)

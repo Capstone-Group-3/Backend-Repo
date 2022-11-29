@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllUsers, getUserByUsername, getUser, createUser, getUserById, toggleAdmin } = require('../db/users');
+const { getAllUsers, getUserByUsername, getUser, createUser, getUserById, toggleAdmin, deleteUser } = require('../db/users');
 const usersRouter = express.Router();
 const jwt = require('jsonwebtoken');
 const { requireUser, requireAdmin } = require('./utilities');
@@ -153,5 +153,15 @@ usersRouter.use((req, res, next) => {
           console.log(error)
         }
       })
+
+  usersRouter.patch('./deactivate', requireUser, async(req, res, next) => {
+    const {username} = req.body
+    try {
+      const deactUser= await deleteUser(username)
+      res.send(deactUser)
+    } catch (error) {
+      console.error
+    }
+  })
 
 module.exports = usersRouter;

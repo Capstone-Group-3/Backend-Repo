@@ -79,6 +79,19 @@ async function updateCartStatus({cartStatus, cartId}) {
     }
 }
 
+async function getShopCartByUserId(userId) {
+    try {
+        const {rows} = await client.query(`
+            SELECT * FROM shopcart
+            WHERE "userId"=${userId};
+        `)
+        
+        return rows
+    } catch (error) {
+        console.error
+    }
+}
+
 // delete product from cart (cartitems) 
 async function removeProductFromCart({productId, cartId}) {
     const addProd = await getProductById(productId)
@@ -95,4 +108,4 @@ async function removeProductFromCart({productId, cartId}) {
     }
 }
 
-module.exports = { addProductToCart, updateCart, removeProductFromCart, createShopCart, getProductsByCartId, updateCartStatus }
+module.exports = { addProductToCart, updateCart, removeProductFromCart, createShopCart, getProductsByCartId, updateCartStatus, getShopCartByUserId }

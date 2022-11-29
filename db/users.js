@@ -106,19 +106,19 @@ async function getUserByEmail(email) {
     }
 }
 
-async function getShopCartByUserId(Id) {
-    try {
-        if (!shopcartid){
-            return null
-        }
-      const { rows: [user] } = await client.query(`
-        WHERE shopcartid=${shopcartid};
-        `);
-      return user;
-    } catch (error) {
-        console.log("error getting user by shopcart");
-    }
-  }
+// async function getShopCartByUserId(Id) {
+//     try {
+//         if (!shopcartid){
+//             return null
+//         }
+//       const { rows: [user] } = await client.query(`
+//         WHERE shopcartid=${shopcartid};
+//         `);
+//       return user;
+//     } catch (error) {
+//         console.log("error getting user by shopcart");
+//     }
+//   }
 
 
 // update user
@@ -166,4 +166,4 @@ async function deleteUser(username) {
     }
 };
 
-module.exports = { createUser, getUser, getUserById, getUserByUsername, toggleAdmin, updateUser, deleteUser, getUserByEmail, getShopCartByUserId }
+module.exports = { createUser, getUser, getUserById, getUserByUsername, toggleAdmin, updateUser, deleteUser, getUserByEmail }

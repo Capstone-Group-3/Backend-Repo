@@ -1,3 +1,5 @@
+const { getUserByUsername } = require("../db/users");
+
 function requireUser(req, res, next) {
     if (!req.user) {
         next({
@@ -9,12 +11,24 @@ function requireUser(req, res, next) {
 };
 
 function requireAdmin(req, res, next) {
-    console.log("require admin: ", req.user.isAdmin)
     if (!req.user.isAdmin) {
         next({
             name: "Missing Admin Error",
             message: "You must be an admin to perform this action"
         });
+    }
+    next();
+}
+
+function requireOwner(req, res, next) { // somehow put username in parameters
+    const thisUsername = req.user.username;
+
+    getUserByUsername(thisUsername);
+    if (!req.user.username === username) {
+        next({
+            name: "Account Authentication Error",
+            message: "You must be the owner of this account to perform this action"
+        })
     }
     next();
 }

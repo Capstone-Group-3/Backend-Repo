@@ -45,7 +45,7 @@ usersRouter.use((req, res, next) => {
         expiresIn:"1w"})
 
         req.user = user;
-        res.send({ message: "you're logged in!", token: token });
+        res.send({ message: "you're logged in!", token: token, user: user });
       } else {
         next({ 
           name: 'IncorrectCredentialsError', 
@@ -106,7 +106,7 @@ usersRouter.use((req, res, next) => {
   usersRouter.get("/me", requireUser, async (req, res, next) => {
     try {
         const response = req.user
-        res.send({response})
+        res.send(response)
     } catch ({name, message}) {
         next({name, message})
     }
@@ -133,7 +133,7 @@ usersRouter.use((req, res, next) => {
           const userShopCart = await getShopCartByUserId(userId);
           if(!username) {
             next({
-              name: "username does not exist",
+              name: "Order does not exist",
               message: "There is no shopcart for this user"
             });
             res.send(userShopCart)
@@ -143,7 +143,7 @@ usersRouter.use((req, res, next) => {
         }
       });
  
-      usersRouter.patch('/setAdmin', requireAdmin, async (req, res, next) => {
+  usersRouter.patch('/setAdmin', requireAdmin, async (req, res, next) => {
         const {username} = req.body;
 
         try {

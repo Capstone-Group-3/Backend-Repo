@@ -1,7 +1,7 @@
 const express = require('express');
 const { getAllProducts, createProduct, getProductById, updateProduct, deleteProduct } = require('../db/products');
 const productsRouter = express.Router();
-const { requireAdmin } = require("./utilities")
+const { requireAdmin, requireUser } = require("./utilities")
 
 // GET /api/products
 productsRouter.get("/", async (req, res, next) => {
@@ -11,7 +11,7 @@ productsRouter.get("/", async (req, res, next) => {
 });
 
 // POST /api/products
-productsRouter.post("/", requireAdmin, async (req, res, next) => {
+productsRouter.post("/",requireUser, requireAdmin, async (req, res, next) => {
     const { name, description, price, quantity } = req.body;
     const productInfo = {};
 
@@ -41,10 +41,8 @@ productsRouter.post("/", requireAdmin, async (req, res, next) => {
 });
 
 // PATCH /api/products/:productId
-productsRouter.patch("/:productId", requireAdmin, async (req, res, next) => {
+productsRouter.patch("/:productId",requireUser, requireAdmin, async (req, res, next) => {
     
-    // Ask jeremy: should these be on an "admin" route? that way users 
-    // wouldn't know what the route is/have access to it at all
     const { productId } = req.params
     const { name, description, price, quantity } = req.body;
     const productInfo = {};
@@ -74,7 +72,7 @@ productsRouter.patch("/:productId", requireAdmin, async (req, res, next) => {
     }
 })
 
-productsRouter.delete('/:productId', requireAdmin, async(req, res, next)=>{
+productsRouter.delete('/:productId',requireUser, requireAdmin, async(req, res, next)=>{
     const { id } = req.params
     try {
         const deleteProduct = await deleteProduct({id})

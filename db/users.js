@@ -54,8 +54,8 @@ async function getUserById(id) {
         const { rows: [user] } = await client.query(`
             SELECT id, username, "isAdmin"
             FROM users
-            WHERE id = ${id};
-        `)
+            WHERE id = $1;
+        `,[id])
         return user
     } catch (error) {
         console.error
@@ -124,9 +124,9 @@ async function updateUser(id, fields = {}) {
         const { rows: [result] } = await client.query(`
             UPDATE users
             SET ${setString}
-            WHERE id=${id}
+            WHERE id=$2
             RETURNING *;
-        `, values);
+        `, [...values, id]);
 
         return result
     } catch (error) {

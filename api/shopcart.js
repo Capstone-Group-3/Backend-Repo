@@ -22,7 +22,7 @@ shopcartRouter.get('/:shopcartId/products', async (req, res, next) => {
             name: 'Order not Found',
             message: `Order ${id} not found`
         });
-            res.send({product});
+            res.send(product);
         } catch ({name, message}) {
             next({name, message});
         }

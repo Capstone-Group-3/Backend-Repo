@@ -18,13 +18,12 @@ async function createShopCart({userId}) {
 // get products by cart -select * from items where cartid=$1 cartid
 async function getProductsByCartId(cartId) {
     try {
-        const { rows: [result] } = await client.query(`
+        const { rows } = await client.query(`
             SELECT * FROM "cartItems"
-            WHERE "cartId"=$1
-            RETURNING *;
+            WHERE "cartId"=$1;
         `, [cartId]);
 
-        return result
+        return rows
     } catch (error) {
         console.error
     }
@@ -47,7 +46,7 @@ async function addProductToCart({cartId, productId}){
 
 
 // update cartitems quantity
-async function updateCart({quantity, productId, cartId}) {
+async function updateCart(quantity, productId, cartId) {
     try {
         const {rows: [result] } = await client.query(`
             UPDATE "cartItems"
@@ -63,16 +62,18 @@ async function updateCart({quantity, productId, cartId}) {
     }
 }
 
-async function updateCartStatus({cartStatus, cartId}) {
+async function updateCartStatus(cartStatus, cartId) {
 
     try {
+        console.log("starting update")
         const {rows: [result] } = await client.query(`
             UPDATE shopcart
             SET "cartStatus"=$1
-            WHERE "cartId"=$2
+            WHERE id=$2
             RETURNING *;
         `, [cartStatus, cartId]);
 
+        console.log("result: ", result)
         return result
     } catch (error) {
         console.error

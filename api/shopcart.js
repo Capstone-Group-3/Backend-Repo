@@ -13,14 +13,17 @@ const { requireUser } = require("./utilities")
 
 // what does each of these routers do?
 
-shopcartRouter.get('/:shopcartId/products', async (req, res, next) => {
+// Get every product from an order
+shopcartRouter.get('/:shopcartId', async (req, res, next) => { 
+    const { shopcartId } = req.params;
+
     try {
-        const id = req.params;
-        const product = await getProductsByCartId(id);
+        const product = await getProductsByCartId(shopcartId);
+        console.log("product: ", product)
         if (product.length === 0)
           res.send({
             name: 'Order not Found',
-            message: `Order ${id} not found`
+            message: `Order ${shopcartId} not found`
         });
             res.send(product);
         } catch ({name, message}) {
@@ -33,9 +36,9 @@ shopcartRouter.get('/:shopcartId/products', async (req, res, next) => {
 //         res.send({ shopcart });
 //       });
       
-
+// make a new cart
 shopcartRouter.post('/', requireUser, async (req, res, next) => {
-        const { userId } = req.body;
+        const { userId } = req.body; // edit this later to also req user
         
         try {
             const shopcart = await createShopCart({userId});
@@ -44,13 +47,14 @@ shopcartRouter.post('/', requireUser, async (req, res, next) => {
             next(error);
           }
       });
-               
-shopcartRouter.patch('/:shopcartId/status', requireUser, async (req, res, next) => {
-  const { cartId } = req.params;
+    
+// changes status of order      
+shopcartRouter.patch('/:shopCartId/status', requireUser, async (req, res, next) => {
+  const { shopCartId } = req.params;
   const { cartStatus } = req.body;
     try {
       if (req.user) {
-        const updatedShopCart = await updateCartStatus({cartStatus, cartId});
+        const updatedShopCart = await updateCartStatus(cartStatus, shopCartId);
         res.send({ shopcart: updatedShopCart });
       } else {
         next({
@@ -64,26 +68,28 @@ shopcartRouter.patch('/:shopcartId/status', requireUser, async (req, res, next) 
 });
 
 // Set route to change quantity in cartitems, (quantity, productId, cartId)
-shopcartRouter.patch('/:shopcartId/items/quantity'), requireUser, async(req, res, next) =>{
-  const { cartId }= req.params
+shopcartRouter.patch('/:shopCartId/quantity', requireUser, async(req, res, next) =>{
+  const { shopCartId }= req.params
   const { productId, quantity } = req.body
   try {
-    const updatedProductCount = await updateCart(quantity, productId, cartId)
-    res.send({product: updatedProductCount})
+    console.log("params: ", shopCartId);
+    const updatedProductCount = await updateCart(quantity, productId, shopCartId)
+    res.send(updatedProductCount)
   } catch (error) {
     console.error
   }
-}
+});
 
-shopcartRouter.delete('/:shopcartId/items/remove'), requireUser, async(req, res, next) =>{
-  const { cartId } = req.params
+// remove a product from an order
+shopcartRouter.delete('/:shopCartId/remove', requireUser, async(req, res, next) =>{
+  const { shopCartId } = req.params
   const {productId} = req.body
   try {
-    const removedItem = await removeProductFromCart({productId, cartId})
+    const removedItem = await removeProductFromCart({productId, shopCartId})
     res.send(removedItem)
   } catch (error) {
     console.error
   }
-}
+});
      
 module.exports = shopcartRouter;

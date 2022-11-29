@@ -106,13 +106,14 @@ async function getUserByEmail(email) {
     }
 }
 
-async function getShopCartByUserId(Id) {
+async function getShopCartByUserId(shopcartid) {
     try {
         if (!shopcartid){
             return null
         }
       const { rows: [user] } = await client.query(`
-        WHERE shopcartid=${shopcartid};
+        SELECT * FROM users
+        WHERE "shopcartid"=${shopcartid};
         `);
       return user;
     } catch (error) {

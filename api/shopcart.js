@@ -1,5 +1,4 @@
 const express = require('express');
-const router = express.Router();
 const shopcartRouter = express.Router();
 const {createShopCart, updateCart, updateCartStatus, removeProductFromCart, getProductsByCartId }= require('../db/shopcart')
 const { requireUser } = require("./utilities")
@@ -12,6 +11,7 @@ const { requireUser } = require("./utilities")
 
 // PATCH /api/shopcart/:shopcartId
 
+// what does each of these routers do?
 
 shopcartRouter.get('/:shopcartId/products', async (req, res, next) => {
     try {

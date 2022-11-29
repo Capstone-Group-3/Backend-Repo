@@ -20,17 +20,17 @@ function requireAdmin(req, res, next) {
     next();
 }
 
-function requireOwner(req, res, next) { // somehow put username in parameters
-    const thisUsername = req.user.username;
+// function requireOwner(req, res, next) { // somehow put username in parameters
+//     const thisUsername = req.user.username;
 
-    getUserByUsername(thisUsername);
-    if (!req.user.username === username) {
-        next({
-            name: "Account Authentication Error",
-            message: "You must be the owner of this account to perform this action"
-        })
-    }
-    next();
-}
+//     getUserByUsername(thisUsername);
+//     if (!req.user.username === username) {
+//         next({
+//             name: "Account Authentication Error",
+//             message: "You must be the owner of this account to perform this action"
+//         })
+//     }
+//     next();
+// }
 
 module.exports = { requireUser, requireAdmin }

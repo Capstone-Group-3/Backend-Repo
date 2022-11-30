@@ -1,6 +1,6 @@
 const express = require('express');
 const shopcartRouter = express.Router();
-const { createShopCart, updateCart, updateCartStatus, removeProductFromCart, getProductsByCartId } = require('../db/shopcart')
+const { createShopCart, updateCart, updateCartStatus, removeProductFromCart, getProductsByCartId, addProductToCart } = require('../db/shopcart')
 const { requireUser } = require("./utilities")
 
 // All shop carts REQURIE OWNER
@@ -12,7 +12,6 @@ shopcartRouter.get('/:shopcartId', async (req, res, next) => {
 
   try {
     const product = await getProductsByCartId(shopcartId);
-    console.log("product: ", product)
     if (product.length === 0)
       res.send({
         name: 'Order not Found',
@@ -24,6 +23,18 @@ shopcartRouter.get('/:shopcartId', async (req, res, next) => {
   }
 });
 
+// get an order by its status- either "standby" or "processed"
+// GET /api/shopcart/:shopCartId/status
+shopcartRouter.get('/:shopCartId', async (req, res, next) => {
+  const { shopCartId } = req.params;
+  const {  } = req.body
+
+  try {
+    
+  } catch ({ name, message }) {
+    next({ name, message });
+  }
+})
 
 // make a new cart
 // POST /api/shopcart
@@ -37,6 +48,23 @@ shopcartRouter.post('/', requireUser, async (req, res, next) => {
     next({ name, message })
   }
 });
+
+// add an item to a shopping cart
+// PATCH /api/shopcart/:shopCartId/add
+shopcartRouter.patch('/:shopCartId/add', requireUser, async (req, res, next) => {
+  const { shopCartId } = req.params;
+  const { productId } = req.body;
+
+  try {
+    await addProductToCart(shopCartId, productId)
+    
+    res.send({ message: `Successfully added product ${productId} to cart number ${shopCartId}` })
+  } catch ({ name, message }) {
+    next({ name, message })
+  }
+});
+
+// PATCH FOR CHECKOUT, SETS STATUS TO PROCESSED AND MAKES A NEW STANDBY CART
 
 // changes status of order (processed or standby)
 // PATCH /api/shopcart/:shopcartId/status

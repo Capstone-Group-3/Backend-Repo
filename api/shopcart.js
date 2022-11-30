@@ -12,7 +12,6 @@ shopcartRouter.get('/:shopcartId', async (req, res, next) => {
 
   try {
     const product = await getProductsByCartId(shopcartId);
-    console.log("product: ", product)
     if (product.length === 0)
       res.send({
         name: 'Order not Found',
@@ -24,6 +23,18 @@ shopcartRouter.get('/:shopcartId', async (req, res, next) => {
   }
 });
 
+// get an order by its status- either "standby" or "processed"
+// GET /api/shopcart/:shopCartId/status
+shopcartRouter.get('/:shopCartId', async (req, res, next) => {
+  const { shopCartId } = req.params;
+  const {  } = req.body
+
+  try {
+    
+  } catch ({ name, message }) {
+    next({ name, message });
+  }
+})
 
 // make a new cart
 // POST /api/shopcart
@@ -45,13 +56,15 @@ shopcartRouter.patch('/:shopCartId/add', requireUser, async (req, res, next) => 
   const { productId } = req.body;
 
   try {
-    const addedProduct = await addProductToCart(shopCartId, productId)
+    await addProductToCart(shopCartId, productId)
     
-    res.send({ message: `Successfully added ${productId} to cart number ${shopCartId}` })
+    res.send({ message: `Successfully added product ${productId} to cart number ${shopCartId}` })
   } catch ({ name, message }) {
     next({ name, message })
   }
 });
+
+// PATCH FOR CHECKOUT, SETS STATUS TO PROCESSED AND MAKES A NEW STANDBY CART
 
 // changes status of order (processed or standby)
 // PATCH /api/shopcart/:shopcartId/status

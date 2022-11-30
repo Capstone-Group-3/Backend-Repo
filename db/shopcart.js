@@ -17,6 +17,26 @@ async function createShopCart({ userId }) {
 };
 
 // get products by cart -select * from items where cartid=$1 cartid
+async function getMyProductsByCartStatus(cartStat, id){
+    try {
+        const {rows} = await client.query(`
+            SELECT id FROM shopcart
+            WHERE "cartStatus"=$1
+            AND "userId" = $2;
+        `, [cartStat, id])
+        const statusCarts = rows.map(element =>{
+            const indivCartId = element.id;
+            const cartPromise = client.query(`
+                SELECT * FROM "cartItems"
+                WHERE "cartId"=$1;
+            `, [indivCartId])
+            return cartPromise
+        })
+    } catch (error) {
+        console.log(red, `${error}`)
+    }
+}
+
 async function getProductsByCartId(cartId) {
     try {
         const { rows } = await client.query(`
@@ -31,7 +51,7 @@ async function getProductsByCartId(cartId) {
 }
 
 
-async function addProductToCart({ cartId, productId }) {
+async function addProductToCart( cartId, productId ) {
     try {
         const addProd = await getProductById(productId)
         const { rows: [result] } = await client.query(`
@@ -110,4 +130,4 @@ async function removeProductFromCart({ productId, cartId }) {
     }
 }
 
-module.exports = { addProductToCart, updateCart, removeProductFromCart, createShopCart, getProductsByCartId, updateCartStatus, getShopCartByUserId }
+module.exports = { getMyProductsByCartStatus, addProductToCart, updateCart, removeProductFromCart, createShopCart, getProductsByCartId, updateCartStatus, getShopCartByUserId }

@@ -1,4 +1,5 @@
 const { client } = require('./client')
+const { red } = require('./client')
 const { createUser, getUserByUsername, getUserById, toggleAdmin, getUser } = require('./users')
 const { createProduct, getProductById, deleteProduct } = require('./products')
 const {addProductToCart} = require('./shopcart')
@@ -14,7 +15,7 @@ async function dropTables(){
             DROP TABLE IF EXISTS users;
         `);
     } catch (error) {
-        console.log(error)
+        console.log(red,`${error}`);
     }
 }
 
@@ -52,7 +53,7 @@ async function createTables(){
             );
         `)
     } catch (error) {
-        console.log(error)
+        console.log(red,`${error}`);
     }
 }
 
@@ -66,7 +67,7 @@ async function createInitialUsers(){
         await createUser({username: "Emirtest", password: "Emirpass"})
         await toggleAdmin("Emirtest")
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 }
 
@@ -77,7 +78,7 @@ async function createInitialProducts(){
         await createProduct( { name: "T-shirt with the pope's face", description: "As title says. I thought these would sell better,", price: 5.99, quantity: 50 } )
         await createProduct( { name: "JNKO jeans", description: "uncovered in a time capsule beneath Washington High School, they'll be popular soon probably", price: 19.85, quantity: 20 } )
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 }
 
@@ -85,7 +86,7 @@ async function initialProdAdds(){
     try {
         await addProductToCart({cartId: 1, productId:1})
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 }
 
@@ -101,7 +102,7 @@ async function resetDB(){
         console.log("Database reset successful")
         client.end();
     } catch (error){
-        console.log(error)
+        console.log(red,`${error}`);
     }
 }
 

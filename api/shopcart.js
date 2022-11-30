@@ -11,7 +11,7 @@ const { requireUser } = require("./utilities")
 
 // PATCH /api/shopcart/:shopcartId
 
-// what does each of these routers do?
+// All shop carts REQURIE OWNER
 
 // Get every product from an order
 shopcartRouter.get('/:shopcartId', async (req, res, next) => { 
@@ -43,8 +43,8 @@ shopcartRouter.post('/', requireUser, async (req, res, next) => {
         try {
             const shopcart = await createShopCart({userId});
             res.send(shopcart);
-          } catch (error) {
-            next(error);
+          } catch ({name, message}) {
+            next({name, message})
           }
       });
     
@@ -62,8 +62,8 @@ shopcartRouter.patch('/:shopCartId/status', requireUser, async (req, res, next) 
           message: "Login to update activity",
         });
       }
-    } catch ({ name, description }) {
-      next({ name, description });
+    } catch ({ name, message }) {
+      next({ name, message });
     }
 });
 
@@ -75,8 +75,8 @@ shopcartRouter.patch('/:shopCartId/quantity', requireUser, async(req, res, next)
     console.log("params: ", shopCartId);
     const updatedProductCount = await updateCart(quantity, productId, shopCartId)
     res.send(updatedProductCount)
-  } catch (error) {
-    console.error
+  } catch ({name, message}) {
+    next({name, message})
   }
 });
 
@@ -87,8 +87,8 @@ shopcartRouter.delete('/:shopCartId/remove', requireUser, async(req, res, next) 
   try {
     const removedItem = await removeProductFromCart({productId, shopCartId})
     res.send(removedItem)
-  } catch (error) {
-    console.error
+  } catch ({name, message}) {
+    next({name, message})
   }
 });
      

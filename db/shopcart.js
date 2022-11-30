@@ -1,4 +1,5 @@
 const { client } = require('./client')
+const { red } = require('./client')
 const { getProductById } = require('./products')
 
 async function createShopCart({userId}) {
@@ -11,7 +12,7 @@ async function createShopCart({userId}) {
 
     return shopcart
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 };
 
@@ -25,7 +26,7 @@ async function getProductsByCartId(cartId) {
 
         return rows
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 }
 
@@ -40,7 +41,7 @@ async function addProductToCart({cartId, productId}){
         `, [cartId, productId, addProd.price, addProd.quantity])
         return result
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 };
 
@@ -58,7 +59,7 @@ async function updateCart(quantity, productId, cartId) {
 
         return result
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 }
 
@@ -76,7 +77,7 @@ async function updateCartStatus(cartStatus, cartId) {
         console.log("result: ", result)
         return result
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 }
 
@@ -89,7 +90,7 @@ async function getShopCartByUserId(userId) {
         
         return rows
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 }
 
@@ -105,7 +106,7 @@ async function removeProductFromCart({productId, cartId}) {
 
         console.log(`Successfully deleted ${addProd.name} from cart`);
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 }
 

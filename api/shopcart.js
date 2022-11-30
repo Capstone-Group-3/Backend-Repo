@@ -1,6 +1,6 @@
 const express = require('express');
 const shopcartRouter = express.Router();
-const { createShopCart, updateCart, updateCartStatus, removeProductFromCart, getProductsByCartId } = require('../db/shopcart')
+const { createShopCart, updateCart, updateCartStatus, removeProductFromCart, getProductsByCartId, addProductToCart } = require('../db/shopcart')
 const { requireUser } = require("./utilities")
 
 // All shop carts REQURIE OWNER
@@ -33,6 +33,21 @@ shopcartRouter.post('/', requireUser, async (req, res, next) => {
   try {
     const shopcart = await createShopCart({ userId });
     res.send(shopcart);
+  } catch ({ name, message }) {
+    next({ name, message })
+  }
+});
+
+// add an item to a shopping cart
+// PATCH /api/shopcart/:shopCartId/add
+shopcartRouter.patch('/:shopCartId/add', requireUser, async (req, res, next) => {
+  const { shopCartId } = req.params;
+  const { productId } = req.body;
+
+  try {
+    const addedProduct = await addProductToCart(shopCartId, productId)
+    
+    res.send({ message: `Successfully added ${productId} to cart number ${shopCartId}` })
   } catch ({ name, message }) {
     next({ name, message })
   }

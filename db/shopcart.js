@@ -2,17 +2,17 @@ const { client } = require('./client')
 const { red } = require('./client')
 const { getProductById } = require('./products')
 
-async function createShopCart({userId}) {
+async function createShopCart({ userId }) {
     try {
-        const {rows: [shopcart]} = await client.query(`
+        const { rows: [shopcart] } = await client.query(`
         INSERT INTO shopcart ("userId", "cartStatus")
         VALUES ($1, $2)
         RETURNING *;
     `, [userId, "standby"]);
 
-    return shopcart
+        return shopcart
     } catch (error) {
-        console.log(red,`${error}`);
+        console.log(red, `${error}`);
     }
 };
 
@@ -26,12 +26,12 @@ async function getProductsByCartId(cartId) {
 
         return rows
     } catch (error) {
-        console.log(red,`${error}`);
+        console.log(red, `${error}`);
     }
 }
 
 
-async function addProductToCart({cartId, productId}){
+async function addProductToCart({ cartId, productId }) {
     try {
         const addProd = await getProductById(productId)
         const { rows: [result] } = await client.query(`
@@ -41,7 +41,7 @@ async function addProductToCart({cartId, productId}){
         `, [cartId, productId, addProd.price, addProd.quantity])
         return result
     } catch (error) {
-        console.log(red,`${error}`);
+        console.log(red, `${error}`);
     }
 };
 
@@ -49,7 +49,7 @@ async function addProductToCart({cartId, productId}){
 // update cartitems quantity
 async function updateCart(quantity, productId, cartId) {
     try {
-        const {rows: [result] } = await client.query(`
+        const { rows: [result] } = await client.query(`
             UPDATE "cartItems"
             SET quantity=$1
             WHERE "productId"=$2
@@ -59,7 +59,7 @@ async function updateCart(quantity, productId, cartId) {
 
         return result
     } catch (error) {
-        console.log(red,`${error}`);
+        console.log(red, `${error}`);
     }
 }
 
@@ -67,7 +67,7 @@ async function updateCartStatus(cartStatus, cartId) {
 
     try {
         console.log("starting update")
-        const {rows: [result] } = await client.query(`
+        const { rows: [result] } = await client.query(`
             UPDATE shopcart
             SET "cartStatus"=$1
             WHERE id=$2
@@ -77,25 +77,25 @@ async function updateCartStatus(cartStatus, cartId) {
         console.log("result: ", result)
         return result
     } catch (error) {
-        console.log(red,`${error}`);
+        console.log(red, `${error}`);
     }
 }
 
 async function getShopCartByUserId(userId) {
     try {
-        const {rows} = await client.query(`
+        const { rows } = await client.query(`
             SELECT * FROM shopcart
             WHERE "userId"=${userId};
         `)
-        
+
         return rows
     } catch (error) {
-        console.log(red,`${error}`);
+        console.log(red, `${error}`);
     }
 }
 
 // delete product from cart (cartitems) 
-async function removeProductFromCart({productId, cartId}) {
+async function removeProductFromCart({ productId, cartId }) {
     const addProd = await getProductById(productId)
     try {
         await client.query(`
@@ -106,7 +106,7 @@ async function removeProductFromCart({productId, cartId}) {
 
         console.log(`Successfully deleted ${addProd.name} from cart`);
     } catch (error) {
-        console.log(red,`${error}`);
+        console.log(red, `${error}`);
     }
 }
 

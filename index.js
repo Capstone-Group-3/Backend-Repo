@@ -3,7 +3,7 @@ const morgan = require("morgan");/*remove for main branch push*/
 const jwt = require("jsonwebtoken");
 const { client } = require("./db/client");
 require("dotenv").config();
-const app = express(); 
+const app = express();
 const cors = require("cors");
 app.use(cors());
 

@@ -1,4 +1,6 @@
 const { client } = require('./client')
+const { red } = require('./client')
+
 
 async function createProduct( { name, description, price, quantity } ) {
     try {
@@ -10,7 +12,7 @@ async function createProduct( { name, description, price, quantity } ) {
 
         return result
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 }
 
@@ -22,7 +24,7 @@ async function getAllProducts (){
 
         return rows
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 }
 
@@ -34,7 +36,7 @@ async function getProductById(id) {
         `, [id])
         return result
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 }
 
@@ -47,7 +49,7 @@ async function getProductByName(name){
         `)
         return products
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 }
 
@@ -71,7 +73,7 @@ async function updateProduct(id, fields={}){
 
         return result
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 };
 
@@ -103,7 +105,7 @@ async function deleteProduct(id){
         `, [id])
         return rows
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 
 

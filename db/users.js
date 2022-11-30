@@ -1,10 +1,12 @@
 const { client } = require('./client')
+const { red } = require('./client')
 const bcrypt = require('bcrypt')
-const SALT_COUNT = 5
+require("dotenv").config()
+const { SALT_COUNT } = process.env 
+
 
 async function createUser({ username, password }) {
-
-    const hashWord = await bcrypt.hash(password, SALT_COUNT)
+    const hashWord = await bcrypt.hash(password, Number(SALT_COUNT))
 
     try {
         const { rows: [user] } = await client.query(`
@@ -22,7 +24,7 @@ async function createUser({ username, password }) {
 
         return user
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 };
 
@@ -42,10 +44,9 @@ async function getUser({ username, password }) {
         if (!passMatch) {
             return console.log('matching failure')
         }
-
         return user
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 };
 
@@ -58,7 +59,7 @@ async function getUserById(id) {
         `,[id])
         return user
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 };
 
@@ -71,7 +72,7 @@ async function getUserByUsername(username) {
         `, [username])
         return user
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 };
 
@@ -87,7 +88,7 @@ async function toggleAdmin(username) {
         `, [!adminStatus, username])
         return user
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 };
 
@@ -102,7 +103,7 @@ async function getUserByEmail(email) {
                 `);
         return user;
     } catch (error) {
-        console.log("error getting user by email");
+        console.log(red,`${error}`);
     }
 }
 
@@ -145,7 +146,7 @@ async function updateUser(id, fields = {}) {
 
         return result
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 }
 
@@ -160,10 +161,10 @@ async function deleteUser(username) {
             WHERE username = $2
             RETURNING *;
         `, [!activeStatus, username])
-        console.log(`User ${currentUser.username} successfully deactivated`);
 
+        return `User ${currentUser.username} successfully deactivated`;
     } catch (error) {
-        console.error
+        console.log(red,`${error}`);
     }
 };
 

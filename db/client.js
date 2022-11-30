@@ -10,4 +10,4 @@ const client = new pg.Client({
     database: process.env.DB_NAME || "capstone"
 });
 
-module.exports = {client, red}
+module.exports = { client, red }

@@ -4,6 +4,7 @@ const { getShopCartByUserId } = require('../db/shopcart')
 const usersRouter = express.Router();
 const jwt = require('jsonwebtoken');
 const { requireUser, requireAdmin } = require('./utilities');
+require("dotenv").config();
 const { JWT_SECRET } = process.env;
 
 // USE /api/users
@@ -35,10 +36,8 @@ usersRouter.post('/login', async (req, res, next) => {
       message: "Please supply both a username and password"
     });
   }
-
   try {
     const user = await getUser({ username, password });
-    console.log("this is my user obj", user);
 
     if (user) {
       const token = jwt.sign({ username: username, id: user.id }
@@ -54,9 +53,8 @@ usersRouter.post('/login', async (req, res, next) => {
         message: 'Username or password is incorrect'
       });
     }
-  } catch (error) {
-    console.log(error);
-    next(error);
+  } catch ({name, message}) {
+    next({name, message});
   }
 });
 
@@ -81,8 +79,8 @@ usersRouter.post('/register', async (req, res, next) => {
       message: "thank you for signing up",
       token
     });
-  } catch (error) {
-    console.log(error)
+  } catch ({name, message}) {
+    next({name, message})
   }
 });
 
@@ -129,6 +127,7 @@ usersRouter.get("/me", requireUser, async (req, res, next) => {
 //         }
 //   });
 
+// REQUIRE OWNER
 usersRouter.get('/orders', async (req, res, next) => {
   const { userId } = req.body
   try {
@@ -151,18 +150,19 @@ usersRouter.patch('/setAdmin', requireAdmin, async (req, res, next) => {
   try {
     const adminResults = await toggleAdmin(username)
     res.send(adminResults)
-  } catch (error) {
-    console.log(error)
+  } catch ({name, message}) {
+    next({name, message})
   }
 })
 
+// REQUIRE OWNER
 usersRouter.patch('/deactivate', requireUser, async (req, res, next) => {
   const { username } = req.body
   try {
     const deactUser = await deleteUser(username)
     res.send(deactUser)
-  } catch (error) {
-    console.error
+  } catch ({name, message}) {
+    next({name, message})
   }
 })
 

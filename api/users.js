@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllUsers, getUserByUsername, getUser, createUser, getUserById, toggleAdmin, deleteUser } = require('../db/users');
+const { getNonAdminUsers, getUserByUsername, getUser, createUser, getUserById, toggleAdmin, deleteUser } = require('../db/users');
 const { getShopCartByUserId } = require('../db/shopcart')
 const usersRouter = express.Router();
 const jwt = require('jsonwebtoken');
@@ -84,6 +84,15 @@ usersRouter.get("/me", requireUser, async (req, res, next) => {
   }
 });
 
+
+usersRouter.get('/nonAdmin', async(req,res,next)=>{
+  try {
+    const regUsers = await getNonAdminUsers()
+    res.send(regUsers)
+  } catch (error) {
+    console.error
+  }
+})
 
 // GET /api/users/orders
 // REQUIRE OWNER

@@ -76,6 +76,19 @@ async function getUserByUsername(username) {
     }
 };
 
+async function getNonAdminUsers(){
+    try {
+        const {rows: [user]} = await client.query(`
+            SELECT id, username FROM users
+            WHERE "isAdmin" =false
+            AND "isActive"=true;
+        `)
+        return user
+    } catch (error) {
+        console.log(red, `${error}`)
+    }
+}
+
 async function toggleAdmin(username) {
     const currentUser = await getUserByUsername(username)
     const adminStatus = currentUser.isAdmin
@@ -152,4 +165,4 @@ async function deleteUser(username) {
     }
 };
 
-module.exports = { createUser, getUser, getUserById, getUserByUsername, toggleAdmin, updateUser, deleteUser, getUserByEmail }
+module.exports = { getNonAdminUsers, createUser, getUser, getUserById, getUserByUsername, toggleAdmin, updateUser, deleteUser, getUserByEmail }

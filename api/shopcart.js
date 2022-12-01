@@ -73,9 +73,16 @@ shopcartRouter.patch('/:shopCartId/add', requireUser, async (req, res, next) => 
   const { productId, quantity } = req.body;
 
   try {
-    await addProductToCart(shopCartId, productId, quantity)
+    const addProductResult = await addProductToCart(shopCartId, productId, quantity)
     
-    res.send({ message: `Successfully added product ${productId} to cart number ${shopCartId}` })
+    if(addProductResult != null) {
+      res.send({ message: `Successfully added product ${productId} to cart number ${shopCartId}` })
+    } else {
+      next({
+        name: "Out of stock error",
+        message: "That item is out of stock"
+      })
+    }
   } catch ({ name, message }) {
     next({ name, message })
   }

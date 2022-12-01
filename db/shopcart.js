@@ -53,15 +53,18 @@ async function getProductsByCartId(cartId) {
 }
 
 
-async function addProductToCart( cartId, productId ) {
+async function addProductToCart( cartId, productId, quantity ) {
     try {
         const addProd = await getProductById(productId)
+        const inventory = addProd.quantity
+        
+        if (inventory >= quantity) {
         const { rows: [result] } = await client.query(`
             INSERT INTO "cartItems" ("cartId", "productId", "priceBoughtAt", quantity)
             VALUES ($1,$2,$3,$4)
             RETURNING *;
-        `, [cartId, productId, addProd.price, addProd.quantity])
-        return result
+        `, [cartId, productId, addProd.price, quantity])
+        return result } 
     } catch (error) {
         console.log(red, `${error}`);
     }

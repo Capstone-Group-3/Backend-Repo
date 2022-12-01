@@ -24,14 +24,16 @@ async function getMyProductsByCartStatus(cartStat, id){
             WHERE "cartStatus"=$1
             AND "userId" = $2;
         `, [cartStat, id])
-        const statusCarts = rows.map(element =>{
+        const cartPromises = rows.map(async element =>{
             const indivCartId = element.id;
-            const cartPromise = client.query(`
+            const {rows} = await client.query(`
                 SELECT * FROM "cartItems"
                 WHERE "cartId"=$1;
             `, [indivCartId])
-            return cartPromise
+            return rows
         })
+        const [ statusCarts ] = await Promise.all(cartPromises)
+        return statusCarts
     } catch (error) {
         console.log(red, `${error}`)
     }
@@ -51,15 +53,18 @@ async function getProductsByCartId(cartId) {
 }
 
 
-async function addProductToCart( cartId, productId ) {
+async function addProductToCart( cartId, productId, quantity ) {
     try {
         const addProd = await getProductById(productId)
+        const inventory = addProd.quantity
+        
+        if (inventory >= quantity) {
         const { rows: [result] } = await client.query(`
             INSERT INTO "cartItems" ("cartId", "productId", "priceBoughtAt", quantity)
             VALUES ($1,$2,$3,$4)
             RETURNING *;
-        `, [cartId, productId, addProd.price, addProd.quantity])
-        return result
+        `, [cartId, productId, addProd.price, quantity])
+        return result } 
     } catch (error) {
         console.log(red, `${error}`);
     }

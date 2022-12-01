@@ -35,16 +35,18 @@ shopcartRouter.get('/:shopcartId', async (req, res, next) => {
 });
 
 // get an order by its status- either "standby" or "processed"
-// GET /api/shopcart/:shopCartId/status
-shopcartRouter.get('/:shopCartId/status', async (req, res, next) => {
-  const { shopCartId } = req.params;
+// This route is for returning either placed orders for a user to display on their profile = "processed"
+// or returning a open order, a shopping cart, for the user to see on the shopping cart page = "standby"
+// GET /api/shopcart/:userId/status
+shopcartRouter.get('/:userId/status', async (req, res, next) => {
+  const { userId } = req.params;
   const { cartStatus } = req.body;
 
   try {
-    const cartByStatus = await getMyProductsByCartStatus(cartStatus, shopCartId)
+    const cartByStatus = await getMyProductsByCartStatus(cartStatus, userId)
     // problem with promises in db function? all shopcartitems gets returned 
       // no return statement at the bottom, and when it's added all promises are pending. Problem with await statements?
-
+      // SOLVED! :)
     res.send({ cartByStatus })
   } catch ({ name, message }) {
     next({ name, message });
@@ -68,10 +70,10 @@ shopcartRouter.post('/', requireUser, async (req, res, next) => {
 // PATCH /api/shopcart/:shopCartId/add
 shopcartRouter.patch('/:shopCartId/add', requireUser, async (req, res, next) => {
   const { shopCartId } = req.params;
-  const { productId } = req.body;
+  const { productId, quantity } = req.body;
 
   try {
-    await addProductToCart(shopCartId, productId)
+    await addProductToCart(shopCartId, productId, quantity)
     
     res.send({ message: `Successfully added product ${productId} to cart number ${shopCartId}` })
   } catch ({ name, message }) {
@@ -81,6 +83,7 @@ shopcartRouter.patch('/:shopCartId/add', requireUser, async (req, res, next) => 
 
 
 // changes status of order (processed or standby) then creates a new cart with status of "standby"
+// basically for placing an order
 // PATCH /api/shopcart/:shopcartId/status
 shopcartRouter.patch('/:shopCartId/status', requireUser, async (req, res, next) => {
   const { shopCartId } = req.params;

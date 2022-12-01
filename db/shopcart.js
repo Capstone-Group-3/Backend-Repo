@@ -64,7 +64,10 @@ async function addProductToCart( cartId, productId, quantity ) {
             VALUES ($1,$2,$3,$4)
             RETURNING *;
         `, [cartId, productId, addProd.price, quantity])
-        return result } 
+        return result 
+        } else {
+            return null
+        } 
     } catch (error) {
         console.log(red, `${error}`);
     }

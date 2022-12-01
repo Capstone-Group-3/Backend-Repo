@@ -11,7 +11,7 @@ productsRouter.get("/", async (req, res, next) => {
 });
 
 // POST /api/products
-productsRouter.post("/", requireUser, requireAdmin, async (req, res, next) => {
+productsRouter.post("/", requireAdmin, async (req, res, next) => {
     const { name, description, price, quantity } = req.body;
     const productInfo = {};
 
@@ -41,7 +41,7 @@ productsRouter.post("/", requireUser, requireAdmin, async (req, res, next) => {
 });
 
 // PATCH /api/products/:productId
-productsRouter.patch("/:productId", requireUser, requireAdmin, async (req, res, next) => {
+productsRouter.patch("/:productId", requireAdmin, async (req, res, next) => {
 
     const { productId } = req.params
     const { name, description, price, quantity } = req.body;

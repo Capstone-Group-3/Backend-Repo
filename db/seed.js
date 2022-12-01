@@ -84,7 +84,11 @@ async function createInitialProducts() {
 
 async function initialProdAdds() {
     try {
-        await addProductToCart({ cartId: 1, productId: 1 })
+        await addProductToCart(1, 1)
+        await addProductToCart(1, 2)
+        await addProductToCart(1, 2)
+        await addProductToCart(2, 2)
+        await addProductToCart(2, 3)
     } catch (error) {
         console.log(red, `${error}`);
     }

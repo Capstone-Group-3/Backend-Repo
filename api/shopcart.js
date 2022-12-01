@@ -1,6 +1,6 @@
 const express = require('express');
 const shopcartRouter = express.Router();
-const { createShopCart, updateCart, updateCartStatus, removeProductFromCart, getProductsByCartId, addProductToCart } = require('../db/shopcart')
+const { createShopCart, updateCart, updateCartStatus, removeProductFromCart, getProductsByCartId, addProductToCart, getMyProductsByCartStatus } = require('../db/shopcart')
 const { requireUser } = require("./utilities")
 
 // All shop carts REQURIE OWNER
@@ -9,7 +9,18 @@ const { requireUser } = require("./utilities")
 // GET /api/shopcart/:shopcartId/
 shopcartRouter.get('/:shopcartId', async (req, res, next) => {
   const { shopcartId } = req.params;
+//   const { userId } = req.body
 
+//   if (req.user.id === userId) { 
+
+//   } else {
+//     next({
+//       name: 'Unauthorized Access Error',
+//       message: 'You cannot access a cart that is not yours'
+//   })
+// } 
+
+// how will we access the shopcartId (cartId) params on the front end? What does that translate to? It references shopcart id but nothing w/ the user 
   try {
     const product = await getProductsByCartId(shopcartId);
     if (product.length === 0)
@@ -25,12 +36,16 @@ shopcartRouter.get('/:shopcartId', async (req, res, next) => {
 
 // get an order by its status- either "standby" or "processed"
 // GET /api/shopcart/:shopCartId/status
-shopcartRouter.get('/:shopCartId', async (req, res, next) => {
+shopcartRouter.get('/:shopCartId/status', async (req, res, next) => {
   const { shopCartId } = req.params;
-  const {  } = req.body
+  const { cartStatus } = req.body;
 
   try {
-    
+    const cartByStatus = await getMyProductsByCartStatus(cartStatus, shopCartId)
+    // problem with promises in db function? all shopcartitems gets returned 
+      // no return statement at the bottom, and when it's added all promises are pending. Problem with await statements?
+
+    res.send({ cartByStatus })
   } catch ({ name, message }) {
     next({ name, message });
   }
@@ -64,17 +79,20 @@ shopcartRouter.patch('/:shopCartId/add', requireUser, async (req, res, next) => 
   }
 });
 
-// PATCH FOR CHECKOUT, SETS STATUS TO PROCESSED AND MAKES A NEW STANDBY CART
 
-// changes status of order (processed or standby)
+// changes status of order (processed or standby) then creates a new cart with status of "standby"
 // PATCH /api/shopcart/:shopcartId/status
 shopcartRouter.patch('/:shopCartId/status', requireUser, async (req, res, next) => {
   const { shopCartId } = req.params;
   const { cartStatus } = req.body;
+  const userId = req.user.id;
+
   try {
     if (req.user) {
       const updatedShopCart = await updateCartStatus(cartStatus, shopCartId);
-      res.send({ shopcart: updatedShopCart });
+      const newCart = await createShopCart({ userId }); // check if this needs to be destructured
+      console.log("new cart created: ", newCart)
+      res.send({ updatedShopCart });
     } else {
       next({
         name: "User Not Logged In",

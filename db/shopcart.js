@@ -24,14 +24,16 @@ async function getMyProductsByCartStatus(cartStat, id){
             WHERE "cartStatus"=$1
             AND "userId" = $2;
         `, [cartStat, id])
-        const statusCarts = rows.map(element =>{
+        const cartPromises = rows.map(async element =>{
             const indivCartId = element.id;
-            const cartPromise = client.query(`
+            const {rows} = await client.query(`
                 SELECT * FROM "cartItems"
                 WHERE "cartId"=$1;
             `, [indivCartId])
-            return cartPromise
+            return rows
         })
+        const [ statusCarts ] = await Promise.all(cartPromises)
+        return statusCarts
     } catch (error) {
         console.log(red, `${error}`)
     }

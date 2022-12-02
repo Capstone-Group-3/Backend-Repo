@@ -76,6 +76,19 @@ async function getUserByUsername(username) {
     }
 };
 
+async function getNonAdminUsers(){
+    try {
+        const {rows} = await client.query(`
+            SELECT id, username FROM users
+            WHERE "isAdmin" =false
+            AND "isActive"=true;
+        `)
+        return rows
+    } catch (error) {
+        console.log(red, `${error}`)
+    }
+}
+
 async function toggleAdmin(username) {
     const currentUser = await getUserByUsername(username)
     const adminStatus = currentUser.isAdmin
@@ -106,22 +119,6 @@ async function getUserByEmail(email) {
         console.log(red,`${error}`);
     }
 }
-
-
-// async function getShopCartByUserId(Id) {
-//     try {
-//         if (!shopcartid){
-//             return null
-//         }
-//       const { rows: [user] } = await client.query(`
-//         WHERE shopcartid=${shopcartid};
-//         `);
-//       return user;
-//     } catch (error) {
-//         console.log("error getting user by shopcart");
-//     }
-//   }
-
 
 // update user
 async function updateUser(id, fields = {}) {
@@ -168,4 +165,4 @@ async function deleteUser(username) {
     }
 };
 
-module.exports = { createUser, getUser, getUserById, getUserByUsername, toggleAdmin, updateUser, deleteUser, getUserByEmail }
+module.exports = { getNonAdminUsers, createUser, getUser, getUserById, getUserByUsername, toggleAdmin, updateUser, deleteUser, getUserByEmail }

@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllUsers, getUserByUsername, getUser, createUser, getUserById, toggleAdmin, deleteUser } = require('../db/users');
+const { getNonAdminUsers, getUserByUsername, getUser, createUser, getUserById, toggleAdmin, deleteUser } = require('../db/users');
 const { getShopCartByUserId } = require('../db/shopcart')
 const usersRouter = express.Router();
 const jwt = require('jsonwebtoken');
@@ -8,24 +8,13 @@ require("dotenv").config();
 const { JWT_SECRET } = process.env;
 
 // USE /api/users
-
-// POST /api/users/login
-
-// POST /api/users/register
-
-// GET /api/users/me
-
-// GET /api/users/:username/shopcart
-
 usersRouter.use((req, res, next) => {
   console.log("A request is being made to /users");
 
-  next(); // THIS IS DIFFERENT
+  next();
 });
 
-// const { getUserByUsername } = require('../db');
-
-// UPDATE
+// POST /api/users/login
 usersRouter.post('/login', async (req, res, next) => {
   const { username, password } = req.body;
 
@@ -53,11 +42,12 @@ usersRouter.post('/login', async (req, res, next) => {
         message: 'Username or password is incorrect'
       });
     }
-  } catch ({name, message}) {
-    next({name, message});
+  } catch ({ name, message }) {
+    next({ name, message });
   }
 });
 
+// POST /api/users/register
 usersRouter.post('/register', async (req, res, next) => {
   const { username, password } = req.body;
 
@@ -79,30 +69,12 @@ usersRouter.post('/register', async (req, res, next) => {
       message: "thank you for signing up",
       token
     });
-  } catch ({name, message}) {
-    next({name, message})
+  } catch ({ name, message }) {
+    next({ name, message })
   }
 });
 
-// usersRouter.post('/me', requireUser, async (req, res, next) =>{
-
-//   const {userId} = req.body;
-
-//   try {
-//     if(req.user.id === userId) {
-//       const userData = await getUserById(userId)
-//       res.send({userData})
-//     } else {
-//       next({
-//         name: "Unauthorized user error",
-//         message: "You are not authorized to view this user's details"
-//       })
-//     }
-//   } catch (error) {
-//     console.log(error)
-//   }
-// })
-
+// GET /api/users/me
 usersRouter.get("/me", requireUser, async (req, res, next) => {
   try {
     const response = req.user
@@ -112,21 +84,17 @@ usersRouter.get("/me", requireUser, async (req, res, next) => {
   }
 });
 
-// usersRouter.get('/users', async (req, res, next) => {
-//     try {
-//       const token = jwt.sign({username}, process.env.JWT_SECRET, {expiresIn:'1w'});
-//       const currentUser = await getAllUsers({username,token});
-//         if(!token) {
-//           next({
-//             message: "Invalid credentials"
-//           })
-//           res.send({currentUser})
-//         } 
-//       } catch (error) {
-//           next(error);
-//         }
-//   });
 
+usersRouter.get('/nonAdmin', async(req,res,next)=>{
+  try {
+    const regUsers = await getNonAdminUsers()
+    res.send(regUsers)
+  } catch (error) {
+    console.error
+  }
+})
+
+// GET /api/users/orders
 // REQUIRE OWNER
 usersRouter.get('/orders', async (req, res, next) => {
   const { userId } = req.body
@@ -144,25 +112,27 @@ usersRouter.get('/orders', async (req, res, next) => {
   }
 });
 
+// PATCH /api/users/setAdmin
 usersRouter.patch('/setAdmin', requireAdmin, async (req, res, next) => {
   const { username } = req.body;
 
   try {
     const adminResults = await toggleAdmin(username)
     res.send(adminResults)
-  } catch ({name, message}) {
-    next({name, message})
+  } catch ({ name, message }) {
+    next({ name, message })
   }
 })
 
 // REQUIRE OWNER
+// PATCH /api/users/deactivate
 usersRouter.patch('/deactivate', requireUser, async (req, res, next) => {
   const { username } = req.body
   try {
     const deactUser = await deleteUser(username)
     res.send(deactUser)
-  } catch ({name, message}) {
-    next({name, message})
+  } catch ({ name, message }) {
+    next({ name, message })
   }
 })
 

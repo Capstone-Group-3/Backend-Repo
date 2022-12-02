@@ -66,6 +66,14 @@ async function createInitialUsers() {
         await toggleAdmin("Nicktest")
         await createUser({ username: "Emirtest", password: "Emirpass" })
         await toggleAdmin("Emirtest")
+        await createUser({ usernmae: "Greg", password: "Notgreg" })
+        await createUser({ username: "Sam", password: "Notsam" })
+        await createUser({ username: "Dylan", password: "Notdylan" })
+        await createUser({ username: "Bill", password: "NotBill" })
+        await createUser({ username: "Izzy", password: "NotIzzy" })
+        await createUser({ username: "Ethan", password: "Notethan" })
+        await createUser({ username: "Ben", password: "Notben" })
+
     } catch (error) {
         console.log(red, `${error}`);
     }
@@ -81,20 +89,20 @@ async function createInitialProducts() {
         await createProduct({ name: "Pikachu backpack", description: "Bright shinning yellow pikachu!", price: 1337.00, quantity: 22 })
         await createProduct({ name: "John Cena T-Shirt", description: "A shirt with absolutely nothing on it!", price: 1300.59 , quantity: 10 })
         await createProduct({ name: "McLovin T-Shirt", description: "the man, the myth, the legend Fogell!", price: 184.32 , quantity: 50 })
-        await createProduct({ name: "Grinch Shorts", description: "Yup! Exactly what the name says.", price: 67.21, qantity: 32 })
+        await createProduct({ name: "Grinch Shorts", description: "Yup! Exactly what the name says.", price: 67.21, quantity: 32 })
         await createProduct({ name: "Spiderman Socks", description: "Red and Blue socks with minor webs.", price: 33.33, quantity: 100 })
         await createProduct({ name: "Green T-Shirt", description: "Just a shirt that's green.", price: 47.24, quantity: 400 })
         await createProduct({ name: "Nike Joggers", description: "Joggers with a high quality check.", price: 233.22, quantity: 100 })
         await createProduct({ name: "Gucci BackPack", description: "The most exquisite item we have", price: 15000.32, quantity:5 })
-   //     await createProduct({ name: "", description: "", price: , quantity:})
-   //     await createProduct({ name: "", description: "", price: , quantity:})
-  //      await createProduct({ name: "", description: "", price: , quantity:})
-  //      await createProduct({ name: "", description: "", price: , quantity:})
-  //      await createProduct({ name: "", description: "", price: , quantity:})
-  //      await createProduct({ name: "", description: "", price: , quantity:})
- //       await createProduct({ name: "", description: "", price: , quantity:})
- //       await createProduct({ name: "", description: "", price: , quantity:})
- //       await createProduct({ name: "", description: "", price: , quantity:})
+        await createProduct({ name: "Zebra Shorts", description: "One of a kind type of pattern!", price: 500.99 , quantity:60 })
+        await createProduct({ name: "Yellow Socks", description: "Bright yellow socks to match the sun.", price: 421.73, quantity:200 })
+        await createProduct({ name: "Rolex Watch", description: "A watch that is ahead of its time.", price: 10000.99 , quantity:10 })
+        await createProduct({ name: "Levi Jeans", description: "Basic nice quality jeans!", price: 139.99 , quantity:100 })
+        await createProduct({ name: "Special T-Shirt", description: "This is not a regular T-Shirt it has some magic to it.", price: 1000.99 , quantity:25 })
+        await createProduct({ name: "Drake & Josh T", description: "Yup, just the greatest show on a T-Shirt.", price: 500.99 , quantity:500 })
+        await createProduct({ name: "Kevin Malone T-Shirt", description: "The smartest person on a T-Shirt", price: 249.99 , quantity:50 })
+        await createProduct({ name: "Chicago Bulls Pants", description: "Rep your favorite team!", price: 699.99, quantity:70 })
+        await createProduct({ name: "Ninja T-Shirt", description: "get your favorite fortnite star T-Shirt", price: 149.99 , quantity:100 })
     } catch (error) {
         console.log(red, `${error}`);
     }

@@ -78,12 +78,12 @@ async function getUserByUsername(username) {
 
 async function getNonAdminUsers(){
     try {
-        const {rows: [user]} = await client.query(`
+        const {rows} = await client.query(`
             SELECT id, username FROM users
             WHERE "isAdmin" =false
             AND "isActive"=true;
         `)
-        return user
+        return rows
     } catch (error) {
         console.log(red, `${error}`)
     }

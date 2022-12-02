@@ -5,7 +5,7 @@ const { requireUser } = require("./utilities")
 
 // All shop carts REQURIE OWNER
 
-shopcartRouter.get('/', async (req, res, next) => {
+shopcartRouter.post('/', async (req, res, next) => {
   const { id } = req.body;
 
   try {
@@ -50,7 +50,7 @@ shopcartRouter.get('/:shopcartId', async (req, res, next) => {
 // This route is for returning either placed orders for a user to display on their profile = "processed"
 // or returning a open order, a shopping cart, for the user to see on the shopping cart page = "standby"
 // GET /api/shopcart/:userId/status
-shopcartRouter.get('/:userId/status', async (req, res, next) => {
+shopcartRouter.post('/:userId/status', async (req, res, next) => {
   const { userId } = req.params;
   const { cartStatus } = req.body;
 
@@ -59,7 +59,7 @@ shopcartRouter.get('/:userId/status', async (req, res, next) => {
     // problem with promises in db function? all shopcartitems gets returned 
       // no return statement at the bottom, and when it's added all promises are pending. Problem with await statements?
       // SOLVED! :)
-    res.send({ cartByStatus })
+    res.send(cartByStatus)
   } catch ({ name, message }) {
     next({ name, message });
   }

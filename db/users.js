@@ -1,5 +1,4 @@
-const { client } = require('./client')
-const { red } = require('./client')
+const { client, red } = require('./client')
 const bcrypt = require('bcrypt')
 require("dotenv").config()
 const { SALT_COUNT } = process.env 
@@ -112,8 +111,8 @@ async function getUserByEmail(email) {
             return null
         }
         const { rows: [user] } = await client.query(`
-                SELECT * FROM users WHERE email=${email}
-                `);
+                SELECT * FROM users WHERE email=$1;
+                `, [email]);
         return user;
     } catch (error) {
         console.log(red,`${error}`);

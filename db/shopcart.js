@@ -1,4 +1,4 @@
-const { client } = require('./client')
+const { client, red } = require('./client')
 const { red } = require('./client')
 const { getProductById } = require('./products')
 
@@ -113,8 +113,8 @@ async function getShopCartByUserId(userId) {
     try {
         const { rows } = await client.query(`
             SELECT * FROM shopcart
-            WHERE "userId"=${userId};
-        `)
+            WHERE "userId"=$1;
+        `, [userId])
 
         return rows
     } catch (error) {

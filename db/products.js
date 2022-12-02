@@ -1,6 +1,4 @@
-const { client } = require('./client')
-const { red } = require('./client')
-
+const { client, red } = require('./client')
 
 async function createProduct({ name, description, price, quantity }) {
     try {
@@ -44,9 +42,8 @@ async function getProductByName(name) {
     try {
         const { rows: [products] } = await client.query(`
             SELECT * FROM products
-            WHERE "name" =${name}
-            RETURNING *
-        `)
+            WHERE "name" =$1;
+        `, [name])
         return products
     } catch (error) {
         console.log(red, `${error}`);

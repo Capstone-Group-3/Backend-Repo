@@ -1,9 +1,21 @@
 const express = require('express');
 const shopcartRouter = express.Router();
-const { createShopCart, updateCart, updateCartStatus, removeProductFromCart, getProductsByCartId, addProductToCart, getMyProductsByCartStatus } = require('../db/shopcart')
+const { createShopCart, updateCart, updateCartStatus, removeProductFromCart, getProductsByCartId, addProductToCart, getMyProductsByCartStatus, getShopCartById } = require('../db/shopcart')
 const { requireUser } = require("./utilities")
 
 // All shop carts REQURIE OWNER
+
+shopcartRouter.get('/', async (req, res, next) => {
+  const { id } = req.body;
+
+  try {
+    const fetchedCart = await getShopCartById(id);
+
+    res.send(fetchedCart)
+  } catch ({ name, message }) {
+    next({ name, message })
+  }
+})
 
 // Get every product from an order
 // GET /api/shopcart/:shopcartId/

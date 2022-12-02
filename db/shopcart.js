@@ -1,5 +1,4 @@
 const { client, red } = require('./client')
-const { red } = require('./client')
 const { getProductById } = require('./products')
 
 async function createShopCart({ userId }) {

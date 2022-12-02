@@ -1,5 +1,5 @@
 const { client, red } = require('./client')
-const { createUser, getUserByUsername, getUserById, toggleAdmin, getUser, createProduct, getProductById, deleteProduct } = require('./index')
+const { createUser, getUserByUsername, getUserById, toggleAdmin, getUser, createProduct, getProductById, deleteProduct, addProductToCart } = require('./index')
 
 
 async function dropTables() {

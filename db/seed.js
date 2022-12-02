@@ -66,7 +66,7 @@ async function createInitialUsers() {
         await toggleAdmin("Nicktest")
         await createUser({ username: "Emirtest", password: "Emirpass" })
         await toggleAdmin("Emirtest")
-        await createUser({ usernmae: "Greg", password: "Notgreg" })
+        await createUser({ username: "Greg", password: "Notgreg" })
         await createUser({ username: "Sam", password: "Notsam" })
         await createUser({ username: "Dylan", password: "Notdylan" })
         await createUser({ username: "Bill", password: "NotBill" })

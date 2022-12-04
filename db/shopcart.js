@@ -1,8 +1,9 @@
 const { client, red } = require('./client')
 const { getProductById } = require('./products')
 
-async function createShopCart({ userId }) {
+async function createShopCart(userId) {
     try {
+        console.log("starting create shop cart ")
         const { rows: [shopcart] } = await client.query(`
         INSERT INTO shopcart ("userId", "cartStatus")
         VALUES ($1, $2)
@@ -135,7 +136,7 @@ async function getShopCartById(id) {
 };
 
 // delete product from cart (cartitems) 
-async function removeProductFromCart({ productId, cartId }) {
+async function removeProductFromCart(productId, cartId) {
     const addProd = await getProductById(productId)
     try {
         await client.query(`

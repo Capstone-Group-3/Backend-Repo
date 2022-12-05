@@ -135,6 +135,20 @@ async function getShopCartById(id) {
     }
 };
 
+async function getShopCartIdByStatus(userId) {
+    try {
+        const { rows: [cart] } = await client.query(`
+            SELECT id FROM shopcart
+            WHERE "userId"=$1
+            AND "cartStatus"=$2;
+        `, [userId, "standby"])
+
+        return cart
+    } catch (error) {
+        console.log(red, `${error}`);
+    }
+};
+
 // delete product from cart (cartitems) 
 async function removeProductFromCart(productId, cartId) {
     const addProd = await getProductById(productId)
@@ -151,4 +165,4 @@ async function removeProductFromCart(productId, cartId) {
     }
 }
 
-module.exports = { getMyProductsByCartStatus, addProductToCart, updateCart, removeProductFromCart, createShopCart, getProductsByCartId, updateCartStatus, getShopCartById, getShopCartByUserId }
+module.exports = { getMyProductsByCartStatus, addProductToCart, updateCart, removeProductFromCart, createShopCart, getProductsByCartId, updateCartStatus, getShopCartById, getShopCartByUserId, getShopCartIdByStatus }

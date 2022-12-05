@@ -1,15 +1,15 @@
 const express = require('express');
 const shopcartRouter = express.Router();
-const { createShopCart, updateCart, updateCartStatus, removeProductFromCart, getProductsByCartId, addProductToCart, getMyProductsByCartStatus, getShopCartById } = require('../db/shopcart')
+const { createShopCart, updateCart, updateCartStatus, removeProductFromCart, getProductsByCartId, addProductToCart, getMyProductsByCartStatus, getShopCartById, getShopCartIdByStatus } = require('../db/shopcart')
 const { requireUser } = require("./utilities")
 
 
-// gets a shopcart by an id
+// gets a user's standby shopcart id, their current shop cart
 shopcartRouter.post('/', requireUser, async (req, res, next) => {
-  const { id } = req.body;
+  const { userId } = req.body;
 
   try {
-    const fetchedCart = await getShopCartById(id);
+    const fetchedCart = await getShopCartIdByStatus(userId);
 
     // REQUIRE OWNER FEATURE
     if (fetchedCart.userId == req.user.id || req.user.isAdmin) {

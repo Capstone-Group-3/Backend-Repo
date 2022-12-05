@@ -94,19 +94,26 @@ usersRouter.get('/nonAdmin', async(req,res,next)=>{
   }
 })
 
-// GET /api/users/orders
-// REQUIRE OWNER
-usersRouter.get('/orders', async (req, res, next) => {
+// POST /api/users/orders
+usersRouter.post('/orders', async (req, res, next) => {
   const { userId } = req.body
   try {
+    const fetchedUser = await getUserById(userId);
     const userShopCart = await getShopCartByUserId(userId);
-    if (!userShopCart) {
+
+    if (fetchedUser.id === req.user.id || req.user.isAdmin) {
+      res.send(userShopCart)
+    } else if (!userShopCart) {
       next({
         name: "Order does not exist",
         message: "There is no shopcart for this user"
       });
+    } else {
+      next({
+        name: 'Unauthorized Access Error',
+        message: 'You must be the owner of the account or an admin to perform this function'
+      })
     }
-    res.send(userShopCart)
   } catch ({ name, message }) {
     next({ name, message })
   }
@@ -124,13 +131,21 @@ usersRouter.patch('/setAdmin', requireAdmin, async (req, res, next) => {
   }
 })
 
-// REQUIRE OWNER
 // PATCH /api/users/deactivate
 usersRouter.patch('/deactivate', requireUser, async (req, res, next) => {
   const { username } = req.body
   try {
-    const deactUser = await deleteUser(username)
-    res.send(deactUser)
+    const fetchedUser = await getUserByUsername(username)
+
+    if (fetchedUser.id === req.user.id || req.user.isAdmin) {
+      const deactUser = await deleteUser(username)
+      res.send(deactUser)
+    } else {
+      next({
+        name: 'Unauthorized Access Error',
+        message: 'You must be the owner of the account or an admin to perform this function'
+      })
+    }
   } catch ({ name, message }) {
     next({ name, message })
   }

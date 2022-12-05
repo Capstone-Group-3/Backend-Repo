@@ -119,14 +119,16 @@ shopcartRouter.patch('/:shopCartId/add', requireUser, async (req, res, next) => 
     const fetchedCart = await getShopCartById(shopCartId);
     
     // REQUIRE OWNER FEATURE
-    if (addProductResult != null && fetchedCart.userId === req.user.id) {
+    if (fetchedCart.userId === req.user.id) {
       const addProductResult = await addProductToCart(shopCartId, productId, quantity);
-      res.send({ message: `Successfully added product ${productId} to cart number ${shopCartId}` })
-    } else if (addProductResult == null) {
-      next({
-        name: "Out of stock error",
-        message: "That item is out of stock"
-      })
+
+        if (addProductResult != null) {
+          res.send({ message: `Successfully added product ${productId} to cart number ${shopCartId}` })
+        } else {
+          next({
+            name: "Out of stock error",
+            message: "That item is out of stock"
+          })}
     } else {
       next({
         name: 'Unauthorized Access Error',
@@ -154,7 +156,7 @@ shopcartRouter.patch('/:shopCartId/status', requireUser, async (req, res, next) 
       if (fetchedCart.userId === userId) {
         const updatedShopCart = await updateCartStatus(cartStatus, shopCartId);
         const newCart = await createShopCart(userId);
-        res.send({ updatedShopCart });
+        res.send({ success: `successful checkout for card ${shopCartId}` });
     } else {
       next({
         name: 'Unauthorized Access Error',

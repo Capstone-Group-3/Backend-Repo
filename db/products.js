@@ -17,7 +17,8 @@ async function createProduct({ name, description, price, quantity }) {
 async function getAllProducts() {
     try {
         const { rows } = await client.query(`
-            SELECT * FROM products;
+            SELECT * FROM products
+            ORDER BY id;
         `)
 
         return rows
@@ -51,23 +52,23 @@ async function getProductByName(name) {
 }
 
 async function updateProduct(id, fields = {}) {
-
-    const setString = Object.keys(fields).map(
+    const keys= Object.keys(fields)
+    if (keys.length === 0) {
+        return ;
+    }
+    const setString = keys.map(
         (key, index) => `"${key}"=$${index + 1}`
     ).join(', ');
-
-    if (setString.length === 0) {
-        return;
-    }
 
     try {
         const { rows: [result] } = await client.query(`
             UPDATE products
             SET ${setString}
-            WHERE id=$2
+            WHERE id=$${keys.length+1}
             RETURNING *;
-            `, [...Object.values(fields), Object.keys(fields).length + 1]);
+            `, [...Object.values(fields), id]);
 
+        
         return result
     } catch (error) {
         console.log(red, `${error}`);

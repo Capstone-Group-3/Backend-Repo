@@ -159,7 +159,7 @@ async function removeProductFromCart(productId, cartId) {
             AND "cartId"=$2;
         `, [productId, cartId]);
 
-        console.log(`Successfully deleted ${addProd.name} from cart`);
+        return addProd.name
     } catch (error) {
         console.log(red, `${error}`);
     }

@@ -202,7 +202,7 @@ shopcartRouter.delete('/:shopCartId/remove', requireUser, async (req, res, next)
     // REQUIRE OWNER FUNCTION
     if (fetchedCart.userId === req.user.id) {
     const removedItem = await removeProductFromCart(productId, shopCartId)
-    res.send(removedItem)
+    res.send({message: `Successfully deleted product ${removedItem} from cart`})
     } else {
       next({
         name: 'Unauthorized Access Error',

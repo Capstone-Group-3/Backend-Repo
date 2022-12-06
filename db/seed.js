@@ -35,7 +35,7 @@ async function createTables() {
                 price NUMERIC NOT NULL,
                 quantity INTEGER NOT NULL,
                 "isActive" BOOLEAN DEFAULT TRUE,
-                image VARCHAR(255) 
+                image VARCHAR(255)  
             );
             CREATE TABLE shopcart (
                 id SERIAL PRIMARY KEY,

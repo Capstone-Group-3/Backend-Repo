@@ -1,8 +1,5 @@
-const { client } = require('./client')
-const { red } = require('./client')
-const { createUser, getUserByUsername, getUserById, toggleAdmin, getUser } = require('./users')
-const { createProduct, getProductById, deleteProduct } = require('./products')
-const { addProductToCart } = require('./shopcart')
+const { client, red } = require('./client')
+const { createUser, getUserByUsername, getUserById, toggleAdmin, getUser, createProduct, getProductById, deleteProduct, addProductToCart } = require('./index')
 
 
 async function dropTables() {
@@ -112,7 +109,7 @@ async function initialProdAdds() {
     try {
         await addProductToCart(1, 1, 1)
         await addProductToCart(1, 2, 1)
-        await addProductToCart(1, 2, 1)
+        await addProductToCart(1, 3, 1)
         await addProductToCart(2, 2, 5)
         await addProductToCart(2, 3, 1)
     } catch (error) {

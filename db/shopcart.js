@@ -1,9 +1,9 @@
-const { client } = require('./client')
-const { red } = require('./client')
+const { client, red } = require('./client')
 const { getProductById } = require('./products')
 
-async function createShopCart({ userId }) {
+async function createShopCart(userId) {
     try {
+        console.log("starting create shop cart ")
         const { rows: [shopcart] } = await client.query(`
         INSERT INTO shopcart ("userId", "cartStatus")
         VALUES ($1, $2)
@@ -113,8 +113,8 @@ async function getShopCartByUserId(userId) {
     try {
         const { rows } = await client.query(`
             SELECT * FROM shopcart
-            WHERE "userId"=${userId};
-        `)
+            WHERE "userId"=$1;
+        `, [userId])
 
         return rows
     } catch (error) {
@@ -135,8 +135,22 @@ async function getShopCartById(id) {
     }
 };
 
+async function getShopCartIdByStatus(userId) {
+    try {
+        const { rows: [cart] } = await client.query(`
+            SELECT id FROM shopcart
+            WHERE "userId"=$1
+            AND "cartStatus"=$2;
+        `, [userId, "standby"])
+
+        return cart
+    } catch (error) {
+        console.log(red, `${error}`);
+    }
+};
+
 // delete product from cart (cartitems) 
-async function removeProductFromCart({ productId, cartId }) {
+async function removeProductFromCart(productId, cartId) {
     const addProd = await getProductById(productId)
     try {
         await client.query(`
@@ -145,10 +159,10 @@ async function removeProductFromCart({ productId, cartId }) {
             AND "cartId"=$2;
         `, [productId, cartId]);
 
-        console.log(`Successfully deleted ${addProd.name} from cart`);
+        return addProd.name
     } catch (error) {
         console.log(red, `${error}`);
     }
 }
 
-module.exports = { getMyProductsByCartStatus, addProductToCart, updateCart, removeProductFromCart, createShopCart, getProductsByCartId, updateCartStatus, getShopCartById, getShopCartByUserId }
+module.exports = { getMyProductsByCartStatus, addProductToCart, updateCart, removeProductFromCart, createShopCart, getProductsByCartId, updateCartStatus, getShopCartById, getShopCartByUserId, getShopCartIdByStatus }

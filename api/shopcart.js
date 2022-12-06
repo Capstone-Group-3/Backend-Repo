@@ -1,17 +1,31 @@
 const express = require('express');
 const shopcartRouter = express.Router();
-const { createShopCart, updateCart, updateCartStatus, removeProductFromCart, getProductsByCartId, addProductToCart, getMyProductsByCartStatus, getShopCartById } = require('../db/shopcart')
+const { createShopCart, updateCart, updateCartStatus, removeProductFromCart, getProductsByCartId, addProductToCart, getMyProductsByCartStatus, getShopCartById, getShopCartIdByStatus } = require('../db/shopcart')
 const { requireUser } = require("./utilities")
 
-// All shop carts REQURIE OWNER
 
-shopcartRouter.get('/', async (req, res, next) => {
-  const { id } = req.body;
+// gets a user's standby shopcart id, their current shop cart
+shopcartRouter.post('/', requireUser, async (req, res, next) => {
+  const { userId } = req.body;
 
   try {
-    const fetchedCart = await getShopCartById(id);
+    const fetchedCart = await getShopCartIdByStatus(userId);
 
-    res.send(fetchedCart)
+    // REQUIRE OWNER FEATURE
+    if (fetchedCart.userId == req.user.id || req.user.isAdmin) {
+      res.send(fetchedCart)
+
+    } else if (!fetchedCart) {
+      next({
+        name: 'Access Error',
+        message: `Shopcart with id ${id} not found`
+      })
+    } else {
+      next({
+        name: 'Unauthorized Access Error',
+        message: 'You must be the owner of the account or an admin to perform this function'
+      })
+    }
   } catch ({ name, message }) {
     next({ name, message })
   }
@@ -19,28 +33,27 @@ shopcartRouter.get('/', async (req, res, next) => {
 
 // Get every product from an order
 // GET /api/shopcart/:shopcartId/
-shopcartRouter.get('/:shopcartId', async (req, res, next) => {
+shopcartRouter.get('/:shopcartId', requireUser, async (req, res, next) => {
   const { shopcartId } = req.params;
-//   const { userId } = req.body
 
-//   if (req.user.id === userId) { 
-
-//   } else {
-//     next({
-//       name: 'Unauthorized Access Error',
-//       message: 'You cannot access a cart that is not yours'
-//   })
-// } 
-
-// how will we access the shopcartId (cartId) params on the front end? What does that translate to? It references shopcart id but nothing w/ the user 
   try {
     const product = await getProductsByCartId(shopcartId);
-    if (product.length === 0)
-      res.send({
+    const fetchedCart = await getShopCartById(shopcartId);
+
+    // REQUIRE OWNER FEATURE
+    if (fetchedCart.userId == req.user.id || req.user.isAdmin) {
+      res.send(product)
+    } else if (product.length === 0) {
+      next({
         name: 'Order not Found',
         message: `Order ${shopcartId} not found`
-      });
-    res.send(product);
+      })
+    } else {
+      next({
+        name: 'Unauthorized Access Error',
+        message: 'You must be the owner of the account or an admin to perform this function'
+      })
+    }
   } catch ({ name, message }) {
     next({ name, message });
   }
@@ -50,16 +63,25 @@ shopcartRouter.get('/:shopcartId', async (req, res, next) => {
 // This route is for returning either placed orders for a user to display on their profile = "processed"
 // or returning a open order, a shopping cart, for the user to see on the shopping cart page = "standby"
 // GET /api/shopcart/:userId/status
-shopcartRouter.get('/:userId/status', async (req, res, next) => {
+shopcartRouter.post('/:userId/status', requireUser, async (req, res, next) => {
   const { userId } = req.params;
   const { cartStatus } = req.body;
 
   try {
-    const cartByStatus = await getMyProductsByCartStatus(cartStatus, userId)
     // problem with promises in db function? all shopcartitems gets returned 
       // no return statement at the bottom, and when it's added all promises are pending. Problem with await statements?
       // SOLVED! :)
-    res.send({ cartByStatus })
+
+      // REQUIRE OWNER FEATURE
+      if (userId == req.user.id || req.user.isAdmin) {
+        const cartByStatus = await getMyProductsByCartStatus(cartStatus, userId)
+        res.send(cartByStatus)
+      } else {
+        next({
+          name: 'Unauthorized Access Error',
+          message: 'You must be the owner of the account or an admin to perform this function'
+        })
+      }
   } catch ({ name, message }) {
     next({ name, message });
   }
@@ -67,32 +89,50 @@ shopcartRouter.get('/:userId/status', async (req, res, next) => {
 
 // make a new cart
 // POST /api/shopcart
-shopcartRouter.post('/', requireUser, async (req, res, next) => {
-  const { userId } = req.body;
+shopcartRouter.post('/newcart', requireUser, async (req, res, next) => {
+  const { userId } = req.body
+  console.log("req.body: ", req.body)
 
   try {
-    const shopcart = await createShopCart({ userId });
-    res.send(shopcart);
+    // REQUIRE OWNER FEATURE
+    if (userId == req.user.id || req.user.isAdmin) {
+      const shopcart = await createShopCart(userId);
+      res.send(shopcart)
+    } else {
+      next({
+        name: 'Unauthorized Access Error',
+        message: 'You must be the owner of the account or an admin to perform this function'
+      })
+    }
   } catch ({ name, message }) {
     next({ name, message })
   }
 });
 
-// add an item to a shopping cart
+// add an item to a shopping cart -- admins can't do this
 // PATCH /api/shopcart/:shopCartId/add
 shopcartRouter.patch('/:shopCartId/add', requireUser, async (req, res, next) => {
   const { shopCartId } = req.params;
   const { productId, quantity } = req.body;
 
   try {
-    const addProductResult = await addProductToCart(shopCartId, productId, quantity)
+    const fetchedCart = await getShopCartById(shopCartId);
     
-    if(addProductResult != null) {
-      res.send({ message: `Successfully added product ${productId} to cart number ${shopCartId}` })
+    // REQUIRE OWNER FEATURE
+    if (fetchedCart.userId === req.user.id) {
+      const addProductResult = await addProductToCart(shopCartId, productId, quantity);
+
+        if (addProductResult != null) {
+          res.send({ message: `Successfully added product ${productId} to cart number ${shopCartId}` })
+        } else {
+          next({
+            name: "Out of stock error",
+            message: "That item is out of stock"
+          })}
     } else {
       next({
-        name: "Out of stock error",
-        message: "That item is out of stock"
+        name: 'Unauthorized Access Error',
+        message: 'You must be the owner of the account to perform this function'
       })
     }
   } catch ({ name, message }) {
@@ -110,15 +150,17 @@ shopcartRouter.patch('/:shopCartId/status', requireUser, async (req, res, next) 
   const userId = req.user.id;
 
   try {
-    if (req.user) {
-      const updatedShopCart = await updateCartStatus(cartStatus, shopCartId);
-      const newCart = await createShopCart({ userId }); // check if this needs to be destructured
-      console.log("new cart created: ", newCart)
-      res.send({ updatedShopCart });
+      const fetchedCart = await getShopCartById(shopCartId);
+      
+      // REQUIRE OWNER FUNCTION
+      if (fetchedCart.userId === userId) {
+        const updatedShopCart = await updateCartStatus(cartStatus, shopCartId);
+        const newCart = await createShopCart(userId);
+        res.send({ success: `successful checkout for card ${shopCartId}` });
     } else {
       next({
-        name: "User Not Logged In",
-        message: "Login to update activity",
+        name: 'Unauthorized Access Error',
+        message: 'You must be the owner of the account to perform this function'
       });
     }
   } catch ({ name, message }) {
@@ -132,9 +174,18 @@ shopcartRouter.patch('/:shopCartId/quantity', requireUser, async (req, res, next
   const { shopCartId } = req.params
   const { productId, quantity } = req.body
   try {
-    console.log("params: ", shopCartId);
-    const updatedProductCount = await updateCart(quantity, productId, shopCartId)
-    res.send(updatedProductCount)
+    const fetchedCart = await getShopCartById(shopCartId);
+
+    // REQUIRE OWNER FUNCTION
+    if (fetchedCart.userId === req.user.id) {
+      const updatedProductCount = await updateCart(quantity, productId, shopCartId)
+      res.send(updatedProductCount)
+    } else {
+      next({
+        name: 'Unauthorized Access Error',
+        message: 'You must be the owner of the account to perform this function'
+      });
+    }
   } catch ({ name, message }) {
     next({ name, message })
   }
@@ -146,8 +197,17 @@ shopcartRouter.delete('/:shopCartId/remove', requireUser, async (req, res, next)
   const { shopCartId } = req.params
   const { productId } = req.body
   try {
-    const removedItem = await removeProductFromCart({ productId, shopCartId })
-    res.send(removedItem)
+    const fetchedCart = await getShopCartById(shopCartId);
+
+    // REQUIRE OWNER FUNCTION
+    if (fetchedCart.userId === req.user.id) {
+    const removedItem = await removeProductFromCart(productId, shopCartId)
+    res.send({message: `Successfully deleted product ${removedItem} from cart`})
+    } else {
+      next({
+        name: 'Unauthorized Access Error',
+        message: 'You must be the owner of the account or an admin to perform this function'
+    })};
   } catch ({ name, message }) {
     next({ name, message })
   }

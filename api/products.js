@@ -44,6 +44,8 @@ productsRouter.post("/", requireAdmin, async (req, res, next) => {
 productsRouter.patch("/:productId", requireAdmin, async (req, res, next) => {
 
     const { productId } = req.params
+    console.log(productId)
+    console.log(req.body)
     const { name, description, price, quantity } = req.body;
     const productInfo = {};
 
@@ -65,8 +67,11 @@ productsRouter.patch("/:productId", requireAdmin, async (req, res, next) => {
 
     try {
         const updatedProduct = await updateProduct(productId, productInfo);
-
-        res.send(updatedProduct);
+        console.log("this is the update:", updatedProduct)
+        if (!updatedProduct) {
+            res.status(400).send({name: "Product not found", message: "Product not Found"})
+        } else {
+        res.status(200).send(updatedProduct);}
     } catch ({ name, message }) {
         next({ name, message })
     }

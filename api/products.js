@@ -12,7 +12,7 @@ productsRouter.get("/", async (req, res, next) => {
 
 // POST /api/products
 productsRouter.post("/", requireAdmin, async (req, res, next) => {
-    const { name, description, price, quantity } = req.body;
+    const { name, description, price, quantity, image } = req.body;
     const productInfo = {};
 
     if (name) {
@@ -29,6 +29,10 @@ productsRouter.post("/", requireAdmin, async (req, res, next) => {
 
     if (quantity) {
         productInfo.quantity = quantity
+    };
+    
+    if (image) {
+        productInfo.image = image
     };
 
     try {
@@ -46,7 +50,7 @@ productsRouter.patch("/:productId", requireAdmin, async (req, res, next) => {
     const { productId } = req.params
     console.log(productId)
     console.log(req.body)
-    const { name, description, price, quantity } = req.body;
+    const { name, description, price, quantity, image } = req.body;
     const productInfo = {};
 
     if (name) {
@@ -63,6 +67,10 @@ productsRouter.patch("/:productId", requireAdmin, async (req, res, next) => {
 
     if (quantity) {
         productInfo.quantity = quantity
+    };
+
+    if (image) {
+        productInfo.image = image
     };
 
     try {

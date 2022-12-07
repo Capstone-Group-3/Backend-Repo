@@ -1,9 +1,17 @@
-const express = require('express');
-const { getNonAdminUsers, getUserByUsername, getUser, createUser, getUserById, toggleAdmin, deleteUser } = require('../db/users');
-const { getShopCartByUserId } = require('../db/shopcart')
+const express = require("express");
+const {
+  getNonAdminUsers,
+  getUserByUsername,
+  getUser,
+  createUser,
+  getUserById,
+  toggleAdmin,
+  deleteUser,
+} = require("../db/users");
+const { getShopCartByUserId } = require("../db/shopcart");
 const usersRouter = express.Router();
-const jwt = require('jsonwebtoken');
-const { requireUser, requireAdmin } = require('./utilities');
+const jwt = require("jsonwebtoken");
+const { requireUser, requireAdmin } = require("./utilities");
 require("dotenv").config();
 const { JWT_SECRET } = process.env;
 
@@ -15,31 +23,30 @@ usersRouter.use((req, res, next) => {
 });
 
 // POST /api/users/login
-usersRouter.post('/login', async (req, res, next) => {
+usersRouter.post("/login", async (req, res, next) => {
   const { username, password } = req.body;
 
   // request must have both
   if (!username || !password) {
     next({
       name: "MissingCredentialsError",
-      message: "Please supply both a username and password"
+      message: "Please supply both a username and password",
     });
   }
   try {
     const user = await getUser({ username, password });
 
     if (user) {
-      const token = jwt.sign({ username: username, id: user.id }
-        , JWT_SECRET, {
-        expiresIn: "1w"
-      })
+      const token = jwt.sign({ username: username, id: user.id }, JWT_SECRET, {
+        expiresIn: "1w",
+      });
 
       req.user = user;
       res.send({ message: "you're logged in!", token: token, user: user });
     } else {
       next({
-        name: 'IncorrectCredentialsError',
-        message: 'Username or password is incorrect'
+        name: "IncorrectCredentialsError",
+        message: "Username or password is incorrect",
       });
     }
   } catch ({ name, message }) {
@@ -48,107 +55,116 @@ usersRouter.post('/login', async (req, res, next) => {
 });
 
 // POST /api/users/register
-usersRouter.post('/register', async (req, res, next) => {
+usersRouter.post("/register", async (req, res, next) => {
   const { username, password } = req.body;
 
   try {
-
     const user = await createUser({
       username: username,
-      password: password
+      password: password,
     });
     console.log("the user: ", user);
-    const token = jwt.sign({
-      id: user.id,
-      username
-    }, process.env.JWT_SECRET, {
-      expiresIn: '1w'
-    });
+    const token = jwt.sign(
+      {
+        id: user.id,
+        username,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1w",
+      }
+    );
     console.log("the token: ", token);
     res.send({
       message: "thank you for signing up",
-      token
+      token,
     });
   } catch ({ name, message }) {
-    next({ name, message })
+    next({ name, message });
   }
 });
 
 // GET /api/users/me
 usersRouter.get("/me", requireUser, async (req, res, next) => {
   try {
-    const response = req.user
-    res.send(response)
+    const response = req.user;
+    res.send(response);
   } catch ({ name, message }) {
-    next({ name, message })
+    next({ name, message });
   }
 });
 
-
-usersRouter.get('/nonAdmin', async(req,res,next)=>{
+usersRouter.get("/nonAdmin", async (req, res, next) => {
   try {
-    const regUsers = await getNonAdminUsers()
-    res.send(regUsers)
+    const regUsers = await getNonAdminUsers();
+    res.send(regUsers);
   } catch (error) {
-    console.error
+    console.error;
   }
-})
+});
 
 // POST /api/users/orders
-usersRouter.post('/orders', async (req, res, next) => {
-  const { userId } = req.body
+usersRouter.post("/orders", async (req, res, next) => {
+  const { userId } = req.body;
   try {
     const fetchedUser = await getUserById(userId);
     const userShopCart = await getShopCartByUserId(userId);
 
     if (fetchedUser.id === req.user.id || req.user.isAdmin) {
-      res.send(userShopCart)
+      res.send(userShopCart);
     } else if (!userShopCart) {
       next({
         name: "Order does not exist",
-        message: "There is no shopcart for this user"
+        message: "There is no shopcart for this user",
       });
     } else {
       next({
-        name: 'Unauthorized Access Error',
-        message: 'You must be the owner of the account or an admin to perform this function'
-      })
+        name: "Unauthorized Access Error",
+        message:
+          "You must be the owner of the account or an admin to perform this function",
+      });
     }
   } catch ({ name, message }) {
-    next({ name, message })
+    next({ name, message });
   }
 });
 
 // PATCH /api/users/setAdmin
-usersRouter.patch('/setAdmin', requireAdmin, async (req, res, next) => {
+usersRouter.patch("/setAdmin", requireAdmin, async (req, res, next) => {
   const { username } = req.body;
 
   try {
-    const adminResults = await toggleAdmin(username)
-    res.send(adminResults)
+    const adminResults = await toggleAdmin(username);
+    res.status(200).send(adminResults);
+    // if we get an error, like no adminResults, what do we send back?
+    // if (!adminResults) { define the name and message, then: res.status(409).send({name, message})} else {happyPath}
   } catch ({ name, message }) {
-    next({ name, message })
+    // error
+    // console.error(red, error)
+    next({ name, message }); // I would prefer they are res.status(400).sends(error)
   }
-})
+});
 
 // PATCH /api/users/deactivate
-usersRouter.patch('/deactivate', requireUser, async (req, res, next) => {
-  const { username } = req.body
+usersRouter.patch("/deactivate", requireUser, async (req, res, next) => {
+  const { username } = req.body;
   try {
-    const fetchedUser = await getUserByUsername(username)
+    const fetchedUser = await getUserByUsername(username);
 
     if (fetchedUser.id === req.user.id || req.user.isAdmin) {
-      const deactUser = await deleteUser(username)
-      res.send(deactUser)
+      const deactUser = await deleteUser(username);
+      res.send(deactUser);
     } else {
-      next({
-        name: 'Unauthorized Access Error',
-        message: 'You must be the owner of the account or an admin to perform this function'
-      })
+      res.send({
+        // res.body - status is default at 500
+        name: "Unauthorized Access Error",
+        message:
+          "You must be the owner of the account or an admin to perform this function",
+      });
     }
   } catch ({ name, message }) {
-    next({ name, message })
+    next({ name, message });
   }
-})
+});
 
 module.exports = usersRouter;

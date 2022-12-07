@@ -1,23 +1,23 @@
 const { getUserByUsername } = require("../db/users");
 
 function requireUser(req, res, next) {
-    if (!req.user) {
-        next({
-            name: "Missing User Error",
-            message: "You must be logged in to perform this action"
-        });
-    }
-    next();
-};
+  if (!req.user) {
+    next({
+      name: "Missing User Error",
+      message: "You must be logged in to perform this action",
+    });
+  }
+  next();
+}
 
 function requireAdmin(req, res, next) {
-    if (!req.user.isAdmin) {
-        next({
-            name: "Missing Admin Error",
-            message: "You must be an admin to perform this action"
-        });
-    }
-    next();
+  if (!req.user.isAdmin) {
+    next({
+      name: "Missing Admin Error",
+      message: "You must be an admin to perform this action",
+    });
+  }
+  next();
 }
 
 // function requireOwner(req, res, next) { // somehow put username in parameters
@@ -33,4 +33,4 @@ function requireAdmin(req, res, next) {
 //     next();
 // }
 
-module.exports = { requireUser, requireAdmin }
+module.exports = { requireUser, requireAdmin };
